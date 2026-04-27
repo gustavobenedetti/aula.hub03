@@ -1,0 +1,1787 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula 3 — Construção de Oferta</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080808;
+  --surface: #111111;
+  --card: #171717;
+  --border: #222222;
+  --accent: #C8F135;
+  --purple: #8B5CF6;
+  --orange: #F97316;
+  --red: #EF4444;
+  --blue: #38BDF8;
+  --green: #22C55E;
+  --yellow: #EAB308;
+  --pink: #EC4899;
+  --text: #E8E8E8;
+  --muted: #666666;
+  --white: #FFFFFF;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Montserrat',sans-serif;font-size:16px;line-height:1.6;overflow-x:hidden}
+
+/* CURSOR */
+.cursor{position:fixed;width:12px;height:12px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference;transition:width .2s,height .2s}
+.cursor-ring{position:fixed;width:36px;height:36px;border:1.5px solid var(--accent);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);opacity:.5;transition:width .3s,height .3s}
+
+/* PROGRESSO */
+#barra-progresso{position:fixed;top:0;left:0;height:3px;background:var(--accent);z-index:1000;width:0%;box-shadow:0 0 12px var(--accent);transition:width .1s linear}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:900;background:rgba(8,8,8,.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px}
+.nav-logo{font-weight:800;font-size:14px;color:var(--accent);letter-spacing:.08em;text-transform:uppercase}
+.nav-links{display:flex;gap:6px}
+.nav-link{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:5px 12px;border-radius:20px;cursor:pointer;border:1px solid transparent;transition:all .2s;text-decoration:none;background:none}
+.nav-link:hover,.nav-link.ativo{color:var(--accent);border-color:var(--accent);background:rgba(200,241,53,.06)}
+.nav-semana{font-size:11px;color:var(--muted)}
+
+/* SEÇÕES */
+section{padding:100px 80px 80px;max-width:1200px;margin:0 auto}
+
+/* CAPA */
+#capa{min-height:100vh;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;max-width:100%;padding:0 80px}
+.capa-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(200,241,53,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(200,241,53,.025) 1px,transparent 1px);background-size:60px 60px;animation:gridDrift 20s linear infinite}
+@keyframes gridDrift{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.capa-glow{position:absolute;right:0;top:50%;transform:translateY(-50%);width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(200,241,53,.05),transparent 65%);pointer-events:none}
+.capa-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(200,241,53,.1);border:1px solid rgba(200,241,53,.3);color:var(--accent);font-size:12px;font-weight:600;padding:6px 16px;border-radius:20px;width:fit-content;margin-bottom:32px;letter-spacing:.08em;text-transform:uppercase;animation:fadeUp .8s ease both}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+.capa-titulo{font-size:clamp(52px,8vw,110px);font-weight:800;line-height:.92;letter-spacing:-.03em;animation:fadeUp .8s .1s ease both}
+.capa-titulo .l1,.capa-titulo .l2{color:var(--white);display:block}
+.capa-titulo .l3{color:var(--accent);display:block}
+.capa-desc{font-size:18px;color:var(--muted);max-width:520px;margin:28px 0 48px;animation:fadeUp .8s .2s ease both;line-height:1.7}
+.capa-stats{display:flex;gap:0;animation:fadeUp .8s .3s ease both}
+.stat-item{padding:20px 32px;border:1px solid var(--border);cursor:default;transition:all .3s}
+.stat-item:first-child{border-radius:12px 0 0 12px}
+.stat-item:last-child{border-radius:0 12px 12px 0}
+.stat-item:hover{background:var(--card);border-color:var(--accent)}
+.stat-valor{font-size:28px;font-weight:800;color:var(--accent);display:block}
+.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.capa-numero{position:absolute;right:80px;bottom:8%;font-size:280px;font-weight:800;color:rgba(200,241,53,.03);line-height:1;user-select:none;pointer-events:none}
+.capa-scroll{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;animation:fadeUp 1s .6s ease both}
+.scroll-linha{width:1px;height:50px;background:linear-gradient(var(--accent),transparent);animation:scrollAnim 1.5s ease-in-out infinite}
+@keyframes scrollAnim{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}100%{transform:scaleY(0);transform-origin:bottom}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+/* LABELS/TÍTULOS */
+.secao-label{font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.secao-titulo{font-size:clamp(32px,5vw,52px);font-weight:800;color:var(--white);letter-spacing:-.02em;margin-bottom:48px;line-height:1.1}
+.secao-titulo span{color:var(--accent)}
+.linha-divisoria{height:1px;background:var(--border);margin-bottom:48px;position:relative;overflow:hidden}
+.linha-divisoria::after{content:'';position:absolute;left:0;top:0;height:1px;width:0;background:var(--accent);transition:width 1.2s ease}
+.linha-divisoria.animada::after{width:100%}
+
+/* AGENDA */
+.agenda-lista{display:flex;flex-direction:column}
+.agenda-item{display:grid;grid-template-columns:100px 1fr auto;align-items:center;gap:32px;padding:24px 32px;border:1px solid var(--border);border-bottom:none;transition:all .3s;cursor:pointer;position:relative;overflow:hidden}
+.agenda-item:first-child{border-radius:12px 12px 0 0}
+.agenda-item:last-child{border-radius:0 0 12px 12px;border-bottom:1px solid var(--border)}
+.agenda-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:background .3s}
+.agenda-item:hover,.agenda-item.expandido{background:var(--card)}
+.agenda-item:hover::before,.agenda-item.expandido::before{background:var(--accent)}
+.agenda-tempo{font-size:13px;font-weight:700;color:var(--accent)}
+.agenda-titulo-item{font-size:17px;font-weight:600;color:var(--white)}
+.agenda-subtitulo{font-size:13px;color:var(--muted);margin-top:4px}
+.agenda-detalhe{max-height:0;overflow:hidden;transition:max-height .4s ease;grid-column:2/3}
+.agenda-item.expandido .agenda-detalhe{max-height:300px;padding-top:12px}
+.agenda-detalhe p{font-size:14px;color:var(--muted);line-height:1.7}
+.agenda-icon{font-size:22px;transition:transform .3s;color:var(--muted);user-select:none}
+.agenda-item.expandido .agenda-icon{transform:rotate(45deg);color:var(--accent)}
+
+/* PRODUTO VS OFERTA */
+.pvso-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:stretch;margin-bottom:56px}
+.pvso-lado{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:32px;position:relative;overflow:hidden}
+.pvso-lado.produto{border-color:rgba(102,102,102,.5)}
+.pvso-lado.oferta{border-color:rgba(200,241,53,.4);background:rgba(200,241,53,.03)}
+.pvso-lado.oferta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(200,241,53,.06),transparent 60%);pointer-events:none}
+.pvso-tag{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:4px 12px;border-radius:4px;display:inline-block;margin-bottom:20px}
+.produto .pvso-tag{background:rgba(102,102,102,.2);color:var(--muted)}
+.oferta .pvso-tag{background:rgba(200,241,53,.15);color:var(--accent)}
+.pvso-nome{font-size:32px;font-weight:800;margin-bottom:16px}
+.produto .pvso-nome{color:var(--muted)}
+.oferta .pvso-nome{color:var(--white)}
+.pvso-lista{list-style:none;display:flex;flex-direction:column;gap:12px}
+.pvso-lista li{font-size:14px;display:flex;gap:10px;align-items:flex-start;line-height:1.5}
+.produto .pvso-lista li{color:var(--muted)}
+.produto .pvso-lista li::before{content:'—';color:var(--muted);flex-shrink:0}
+.oferta .pvso-lista li{color:var(--text)}
+.oferta .pvso-lista li::before{content:'→';color:var(--accent);flex-shrink:0}
+.pvso-vs{display:flex;align-items:center;justify-content:center;padding:0 24px;font-size:28px;font-weight:800;color:var(--border)}
+.pvso-exemplo{margin-top:24px;padding-top:20px;border-top:1px solid var(--border)}
+.pvso-exemplo-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px}
+.pvso-exemplo-texto{font-size:13px;line-height:1.6;font-style:italic}
+.produto .pvso-exemplo-texto{color:var(--muted)}
+.oferta .pvso-exemplo-texto{color:var(--text)}
+
+.pvso-destaque{background:rgba(200,241,53,.07);border:1px solid rgba(200,241,53,.25);border-radius:12px;padding:24px 32px;display:flex;gap:20px;align-items:flex-start;margin-bottom:56px}
+.pvso-destaque-icon{font-size:28px;flex-shrink:0}
+.pvso-destaque-texto strong{color:var(--accent);display:block;font-size:16px;margin-bottom:6px}
+.pvso-destaque-texto p{font-size:14px;color:var(--muted);line-height:1.7}
+
+/* PROPOSTA DE VALOR */
+.pv-framework{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:48px}
+.pv-pilar{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 20px;transition:all .3s;cursor:default;position:relative;overflow:hidden}
+.pv-pilar::before{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--pilar-cor,var(--accent))}
+.pv-pilar:hover{transform:translateY(-4px);border-color:var(--pilar-cor,var(--accent))}
+.pv-pilar-num{font-size:36px;font-weight:800;color:rgba(200,241,53,.1);margin-bottom:12px;line-height:1}
+.pv-pilar-nome{font-size:14px;font-weight:700;color:var(--white);margin-bottom:8px}
+.pv-pilar-desc{font-size:13px;color:var(--muted);line-height:1.6}
+.pv-pilar-pergunta{font-size:12px;font-style:italic;color:var(--muted);margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+
+/* CONSTRUTOR DE PROPOSTA DE VALOR */
+.construtor-pv{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:36px;margin-bottom:56px}
+.construtor-titulo{font-size:18px;font-weight:700;color:var(--white);margin-bottom:8px}
+.construtor-desc{font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.6}
+.construtor-campos{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}
+.construtor-campo{display:flex;flex-direction:column;gap:8px}
+.construtor-campo label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.construtor-campo input,.construtor-campo textarea{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--white);font-family:'Montserrat',sans-serif;font-size:14px;padding:12px 16px;outline:none;transition:border-color .3s;width:100%;resize:none}
+.construtor-campo input:focus,.construtor-campo textarea:focus{border-color:var(--accent)}
+.construtor-campo input::placeholder,.construtor-campo textarea::placeholder{color:var(--muted);font-style:italic}
+.pv-preview{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;position:relative;overflow:hidden}
+.pv-preview::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 100%,rgba(200,241,53,.05),transparent 60%);pointer-events:none}
+.pv-preview-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.pv-preview-label span{font-size:10px;background:rgba(200,241,53,.1);color:var(--accent);padding:3px 10px;border-radius:10px}
+.pv-preview-texto{font-size:16px;color:var(--text);line-height:1.8;font-weight:500}
+.pv-preview-texto .pv-fill{color:var(--accent);font-weight:700;border-bottom:1px dashed rgba(200,241,53,.4)}
+.pv-preview-texto .pv-empty{color:rgba(102,102,102,.5);font-style:italic}
+.pv-copiar-btn{width:100%;padding:12px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .3s;margin-top:16px}
+.pv-copiar-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ELEMENTOS DA OFERTA */
+.elementos-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:48px}
+.elemento-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.elemento-card::after{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s}
+.elemento-card:hover::after,.elemento-card.aberto::after{opacity:1}
+.elemento-card.aberto{border-color:var(--el-cor,var(--accent))}
+.el1::after{background:radial-gradient(circle at 90% 10%,rgba(200,241,53,.06),transparent 60%)}
+.el2::after{background:radial-gradient(circle at 90% 10%,rgba(56,189,248,.06),transparent 60%)}
+.el3::after{background:radial-gradient(circle at 90% 10%,rgba(139,92,246,.06),transparent 60%)}
+.el4::after{background:radial-gradient(circle at 90% 10%,rgba(249,115,22,.06),transparent 60%)}
+.el5::after{background:radial-gradient(circle at 90% 10%,rgba(34,197,94,.06),transparent 60%)}
+.el6::after{background:radial-gradient(circle at 90% 10%,rgba(234,179,8,.06),transparent 60%)}
+.el7::after{background:radial-gradient(circle at 90% 10%,rgba(236,72,153,.06),transparent 60%)}
+.el8::after{background:radial-gradient(circle at 90% 10%,rgba(239,68,68,.06),transparent 60%)}
+.elemento-num{font-size:48px;font-weight:800;line-height:1;margin-bottom:12px;opacity:.15}
+.elemento-icon{font-size:28px;position:absolute;top:24px;right:24px}
+.elemento-nome{font-size:18px;font-weight:700;color:var(--white);margin-bottom:8px}
+.elemento-resumo{font-size:13px;color:var(--muted);line-height:1.5}
+.elemento-corpo{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.elemento-card.aberto .elemento-corpo{max-height:500px}
+.elemento-corpo-inner{padding-top:20px;margin-top:20px;border-top:1px solid var(--border)}
+.elemento-corpo-inner p{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:12px}
+.elemento-corpo-inner p:last-child{margin-bottom:0}
+.elemento-exemplo{background:var(--surface);border-radius:8px;padding:14px 18px;margin-top:12px}
+.elemento-exemplo-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:6px}
+.elemento-exemplo-texto{font-size:13px;line-height:1.6}
+
+/* STACK DE OFERTA */
+.stack-layout{display:grid;grid-template-columns:1fr 380px;gap:32px;align-items:start}
+.stack-elementos{display:flex;flex-direction:column;gap:8px}
+.stack-item-btn{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;cursor:pointer;transition:all .3s;display:flex;align-items:center;gap:16px;text-align:left;font-family:'Montserrat',sans-serif;position:relative;overflow:hidden}
+.stack-item-btn::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--item-cor,var(--accent));opacity:0;transition:opacity .3s}
+.stack-item-btn:hover::before,.stack-item-btn.adicionado::before{opacity:1}
+.stack-item-btn:hover{border-color:var(--item-cor,var(--accent));transform:translateX(4px)}
+.stack-item-btn.adicionado{border-color:var(--item-cor,var(--accent));background:rgba(200,241,53,.03)}
+.stack-item-ico{font-size:22px;flex-shrink:0}
+.stack-item-info{flex:1}
+.stack-item-nome{font-size:14px;font-weight:600;color:var(--white)}
+.stack-item-valor{font-size:12px;color:var(--muted)}
+.stack-item-check{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;flex-shrink:0;transition:all .3s}
+.stack-item-btn.adicionado .stack-item-check{background:var(--item-cor,var(--accent));border-color:var(--item-cor,var(--accent));color:var(--bg);font-weight:700}
+
+.stack-preview{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;position:sticky;top:80px}
+.stack-preview-titulo{font-size:15px;font-weight:700;color:var(--white);margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.stack-oferta-vazia{text-align:center;padding:32px 0;color:var(--muted);font-size:14px}
+.stack-oferta-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);animation:fadeIn .25s ease}
+.stack-oferta-item:last-of-type{border-bottom:none}
+.stack-oferta-item-ico{font-size:18px}
+.stack-oferta-item-nome{flex:1;font-size:13px;color:var(--text);font-weight:500}
+.stack-oferta-item-val{font-size:13px;font-weight:700;color:var(--accent)}
+.stack-total-row{display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid var(--border);margin-top:8px}
+.stack-total-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.stack-total-val{font-size:28px;font-weight:800;color:var(--accent)}
+.stack-percepcao{margin-top:16px;background:rgba(200,241,53,.06);border-radius:8px;padding:14px 16px}
+.stack-percepcao-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px}
+.stack-barra-bg{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.stack-barra-fill{height:100%;background:var(--accent);border-radius:4px;transition:width .5s ease;box-shadow:0 0 8px var(--accent)}
+.stack-percepcao-texto{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
+.stack-limpar{width:100%;padding:10px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .3s;margin-top:12px}
+.stack-limpar:hover{border-color:var(--red);color:var(--red)}
+
+@keyframes fadeIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+
+/* PRECIFICAÇÃO */
+.preco-tabs{display:flex;gap:2px;margin-bottom:32px;background:var(--surface);border-radius:10px;padding:4px;width:fit-content;border:1px solid var(--border)}
+.preco-tab{padding:10px 28px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:all .25s;color:var(--muted);border:none;background:none;font-family:'Montserrat',sans-serif}
+.preco-tab.ativo{background:var(--accent);color:var(--bg);font-weight:700}
+.preco-painel{display:none;animation:fadeInUp .3s ease}
+.preco-painel.ativo{display:block}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Calculadora de valor */
+.calc-valor-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px}
+.calc-val-bloco{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px}
+.calc-val-titulo{font-size:15px;font-weight:700;color:var(--white);margin-bottom:20px}
+.calc-val-campo{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.calc-val-campo:last-child{margin-bottom:0}
+.calc-val-campo label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.calc-val-input{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--white);font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;padding:12px 16px;outline:none;width:100%;transition:border-color .3s;text-align:right}
+.calc-val-input:focus{border-color:var(--accent)}
+.calc-val-prefix{position:relative}
+.calc-val-prefix::before{content:'R$';position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;font-weight:600;pointer-events:none}
+.calc-val-prefix input{padding-left:40px;text-align:left}
+.calc-resultado-grande{background:linear-gradient(135deg,rgba(200,241,53,.08),rgba(200,241,53,.03));border:1px solid rgba(200,241,53,.25);border-radius:16px;padding:32px;text-align:center}
+.calc-resultado-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px}
+.calc-resultado-num{font-size:64px;font-weight:800;color:var(--accent);display:block;line-height:1}
+.calc-resultado-sub{font-size:14px;color:var(--muted);margin-top:8px}
+.calc-resultado-ratio{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+.ratio-item{background:var(--surface);border-radius:8px;padding:14px;text-align:center}
+.ratio-num{font-size:20px;font-weight:800;display:block}
+.ratio-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+
+/* Tiers de preço */
+.tiers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+.tier-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;position:relative;overflow:hidden;transition:all .3s;cursor:pointer}
+.tier-card.popular{border-color:var(--accent);background:rgba(200,241,53,.03)}
+.tier-card.popular::before{content:'MAIS POPULAR';position:absolute;top:0;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--bg);font-size:9px;font-weight:800;padding:4px 16px;border-radius:0 0 8px 8px;letter-spacing:.1em}
+.tier-card:hover{transform:translateY(-4px)}
+.tier-nome{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+.tier-essencial .tier-nome{color:var(--muted)}
+.tier-popular .tier-nome{color:var(--accent)}
+.tier-premium .tier-nome{color:var(--purple)}
+.tier-preco{font-size:42px;font-weight:800;color:var(--white);line-height:1;margin-bottom:6px}
+.tier-preco-desc{font-size:12px;color:var(--muted);margin-bottom:24px}
+.tier-lista{list-style:none;display:flex;flex-direction:column;gap:10px}
+.tier-lista li{font-size:13px;color:var(--text);display:flex;gap:10px;align-items:flex-start}
+.tier-lista li.off{color:var(--muted)}
+.tier-lista li.off::before{content:'✗';color:var(--border)}
+.tier-essencial .tier-lista li:not(.off)::before{content:'✓';color:var(--muted);flex-shrink:0}
+.tier-popular .tier-lista li:not(.off)::before{content:'✓';color:var(--accent);flex-shrink:0}
+.tier-premium .tier-lista li:not(.off)::before{content:'✓';color:var(--purple);flex-shrink:0}
+.tier-btn{display:block;width:100%;text-align:center;padding:12px;border-radius:8px;border:1px solid var(--border);font-size:13px;font-weight:600;margin-top:24px;cursor:pointer;background:transparent;font-family:'Montserrat',sans-serif;transition:all .3s}
+.tier-essencial .tier-btn{color:var(--muted)}
+.tier-essencial .tier-btn:hover{border-color:var(--muted);color:var(--white)}
+.tier-popular .tier-btn{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.tier-popular .tier-btn:hover{background:#d4ff3d}
+.tier-premium .tier-btn{color:var(--purple)}
+.tier-premium .tier-btn:hover{border-color:var(--purple);background:rgba(139,92,246,.1)}
+
+.ancora-visual{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;margin-bottom:32px}
+.ancora-titulo{font-size:16px;font-weight:700;color:var(--white);margin-bottom:8px}
+.ancora-desc{font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+.ancora-comparador{display:flex;align-items:center;gap:0}
+.ancora-box{padding:20px 32px;border:1px solid var(--border);text-align:center;flex:1;transition:all .3s}
+.ancora-box:first-child{border-radius:12px 0 0 12px}
+.ancora-box:last-child{border-radius:0 12px 12px 0}
+.ancora-box.referencia{opacity:.5;background:rgba(102,102,102,.05)}
+.ancora-box.alvo{background:rgba(200,241,53,.05);border-color:rgba(200,241,53,.4)}
+.ancora-box.inferior{background:rgba(239,68,68,.03);border-color:rgba(239,68,68,.2)}
+.ancora-box-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.ancora-box.referencia .ancora-box-label{color:var(--muted)}
+.ancora-box.alvo .ancora-box-label{color:var(--accent)}
+.ancora-box.inferior .ancora-box-label{color:var(--red)}
+.ancora-box-preco{font-size:28px;font-weight:800}
+.ancora-box.referencia .ancora-box-preco{color:var(--muted);text-decoration:line-through}
+.ancora-box.alvo .ancora-box-preco{color:var(--accent)}
+.ancora-box.inferior .ancora-box-preco{color:var(--red)}
+.ancora-box-desc{font-size:12px;color:var(--muted);margin-top:4px}
+.ancora-seta{padding:0 8px;color:var(--muted);font-size:20px}
+
+/* GARANTIAS */
+.garantias-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:48px}
+.garantia-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;transition:all .3s;cursor:default;position:relative;overflow:hidden}
+.garantia-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--g-cor,var(--green))}
+.garantia-card:hover{border-color:var(--g-cor,var(--green));transform:translateY(-3px)}
+.garantia-icon{font-size:32px;margin-bottom:16px}
+.garantia-nome{font-size:16px;font-weight:700;color:var(--white);margin-bottom:8px}
+.garantia-desc{font-size:13px;color:var(--muted);line-height:1.6}
+.garantia-quando{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+
+.garantia-calc{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;margin-bottom:48px}
+.garantia-calc-titulo{font-size:16px;font-weight:700;color:var(--white);margin-bottom:8px}
+.garantia-calc-desc{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:24px}
+.garantia-slider-grupo{margin-bottom:20px}
+.garantia-slider-grupo label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.garantia-slider-grupo label span{font-size:15px;font-weight:800;color:var(--accent)}
+.g-slider{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:3px;background:var(--border);outline:none;cursor:pointer}
+.g-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);cursor:pointer}
+.garantia-resultado{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+.g-res-card{background:var(--surface);border-radius:10px;padding:16px;text-align:center}
+.g-res-num{font-size:28px;font-weight:800;display:block;color:var(--accent)}
+.g-res-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+
+/* SEQUÊNCIA DE APRESENTAÇÃO */
+.sequencia-lista{display:flex;flex-direction:column;gap:0;margin-bottom:48px}
+.seq-item{display:flex;gap:24px;position:relative;padding-bottom:0}
+.seq-item:not(:last-child)::after{content:'';position:absolute;left:19px;top:52px;bottom:0;width:1px;background:var(--border)}
+.seq-num-wrapper{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.seq-num{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;border:2px solid var(--border);background:var(--card);color:var(--muted);z-index:1;position:relative;transition:all .3s;cursor:pointer;flex-shrink:0}
+.seq-item:hover .seq-num{border-color:var(--seq-cor,var(--accent));color:var(--seq-cor,var(--accent));background:rgba(200,241,53,.07)}
+.seq-corpo{flex:1;padding:0 0 32px}
+.seq-nome{font-size:17px;font-weight:700;color:var(--white);margin-bottom:8px}
+.seq-desc{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:12px}
+.seq-dica{background:var(--surface);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--text);line-height:1.6}
+.seq-dica strong{color:var(--accent)}
+.seq-erro{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:12px 16px;font-size:13px;color:rgba(239,68,68,.8);line-height:1.6;margin-top:8px}
+.seq-erro::before{content:'✗ Erro comum: '}
+
+/* DIAGNÓSTICO FINAL */
+.diagnostico{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:36px;margin-bottom:48px}
+.diagnostico-titulo{font-size:20px;font-weight:700;color:var(--white);margin-bottom:8px}
+.diagnostico-desc{font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.6}
+.diag-perguntas{display:flex;flex-direction:column;gap:16px;margin-bottom:28px}
+.diag-pergunta{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px 24px;transition:all .3s}
+.diag-pergunta-texto{font-size:15px;color:var(--white);margin-bottom:14px;line-height:1.5}
+.diag-opcoes{display:flex;gap:8px;flex-wrap:wrap}
+.diag-opt{padding:8px 20px;border-radius:20px;border:1px solid var(--border);font-size:13px;font-weight:600;cursor:pointer;transition:all .3s;background:transparent;font-family:'Montserrat',sans-serif;color:var(--muted)}
+.diag-opt:hover{border-color:var(--accent);color:var(--accent)}
+.diag-opt.selecionado{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.diag-opt.nao.selecionado{background:var(--red);color:var(--white);border-color:var(--red)}
+.diag-resultado{background:linear-gradient(135deg,rgba(200,241,53,.08),rgba(200,241,53,.03));border:1px solid rgba(200,241,53,.25);border-radius:12px;padding:28px;display:none}
+.diag-resultado.visivel{display:block;animation:fadeInUp .4s ease}
+.diag-score-row{display:flex;align-items:center;gap:24px;margin-bottom:20px}
+.diag-score-num{font-size:72px;font-weight:800;color:var(--accent);line-height:1}
+.diag-score-info{}
+.diag-score-label{font-size:14px;color:var(--white);font-weight:600;margin-bottom:4px}
+.diag-score-sub{font-size:13px;color:var(--muted)}
+.diag-barra-bg{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:16px}
+.diag-barra-fill{height:100%;background:var(--accent);border-radius:4px;transition:width .8s ease;box-shadow:0 0 8px var(--accent)}
+.diag-recomendacoes{display:flex;flex-direction:column;gap:8px}
+.diag-rec{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:flex-start;line-height:1.6}
+.diag-btn{padding:14px 32px;background:var(--accent);color:var(--bg);font-family:'Montserrat',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:10px;cursor:pointer;transition:all .3s;margin-right:12px}
+.diag-btn:hover{background:#d4ff3d;transform:translateY(-1px)}
+.diag-btn-reset{padding:14px 20px;background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;border-radius:10px;cursor:pointer;transition:all .3s}
+.diag-btn-reset:hover{border-color:var(--red);color:var(--red)}
+
+/* TAREFAS */
+.tarefas-lista{display:flex;flex-direction:column;gap:16px;margin-bottom:48px}
+.tarefa-item{display:flex;gap:24px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px 32px;transition:all .3s;cursor:pointer;position:relative;overflow:hidden}
+.tarefa-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;transition:width .4s;background:rgba(200,241,53,.04)}
+.tarefa-item.concluida::before{width:100%}
+.tarefa-item.concluida{border-color:rgba(200,241,53,.35)}
+.tarefa-num{font-size:40px;font-weight:800;line-height:1;flex-shrink:0;transition:color .3s}
+.t1 .tarefa-num{color:rgba(200,241,53,.25)}.t2 .tarefa-num{color:rgba(139,92,246,.25)}.t3 .tarefa-num{color:rgba(249,115,22,.25)}.t4 .tarefa-num{color:rgba(56,189,248,.25)}
+.tarefa-item.concluida.t1 .tarefa-num{color:var(--accent)}.tarefa-item.concluida.t2 .tarefa-num{color:var(--purple)}.tarefa-item.concluida.t3 .tarefa-num{color:var(--orange)}.tarefa-item.concluida.t4 .tarefa-num{color:var(--blue)}
+.tarefa-corpo{flex:1}
+.tarefa-nome{font-size:18px;font-weight:600;color:var(--white);margin-bottom:8px}
+.tarefa-desc{font-size:14px;color:var(--muted);line-height:1.7}
+.tarefa-check{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .3s;color:transparent}
+.tarefa-item.concluida .tarefa-check{background:var(--accent);border-color:var(--accent);color:var(--bg);font-weight:700}
+.progresso-tarefas{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 32px;display:flex;align-items:center;gap:24px;margin-bottom:40px}
+.progresso-label{font-size:13px;color:var(--muted);min-width:120px;font-weight:500}
+.progresso-barra{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.progresso-fill{height:100%;background:var(--accent);border-radius:4px;width:0%;transition:width .5s ease;box-shadow:0 0 8px var(--accent)}
+.progresso-pct{font-size:20px;font-weight:800;color:var(--accent);min-width:48px;text-align:right}
+
+/* ENCERRAMENTO */
+.encerramento{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:48px;text-align:center;position:relative;overflow:hidden;margin-bottom:48px}
+.encerramento::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 100%,rgba(200,241,53,.08),transparent 60%);pointer-events:none}
+.encerramento-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(200,241,53,.1);border:1px solid rgba(200,241,53,.3);color:var(--accent);font-size:12px;font-weight:600;padding:6px 16px;border-radius:20px;margin-bottom:24px;letter-spacing:.08em;text-transform:uppercase}
+.encerramento-titulo{font-size:clamp(32px,4vw,52px);font-weight:800;color:var(--white);margin-bottom:16px;line-height:1.1}
+.encerramento-titulo span{color:var(--accent)}
+.encerramento-desc{font-size:16px;color:var(--muted);max-width:560px;margin:0 auto 40px;line-height:1.7}
+.encerramento-trio{display:flex;justify-content:center;gap:24px;flex-wrap:wrap}
+.enc-pilar{text-align:center}
+.enc-pilar-icone{font-size:32px;margin-bottom:8px}
+.enc-pilar-titulo{font-size:13px;font-weight:700;color:var(--white);margin-bottom:4px}
+.enc-pilar-sub{font-size:12px;color:var(--muted)}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:32px 80px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+.footer-logo{font-weight:800;color:var(--accent);font-size:13px}
+
+/* UTILITÁRIOS */
+.revelar{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.revelar.visivel{opacity:1;transform:translateY(0)}
+.toast{position:fixed;bottom:32px;right:32px;background:var(--accent);color:var(--bg);font-size:14px;font-weight:600;padding:14px 24px;border-radius:10px;z-index:9999;box-shadow:0 8px 32px rgba(200,241,53,.3);transform:translateY(80px);opacity:0;transition:all .3s ease;max-width:320px}
+.toast.visivel{transform:translateY(0);opacity:1}
+.btn-anotacoes{position:fixed;bottom:32px;left:32px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px;font-weight:600;padding:12px 20px;border-radius:10px;cursor:pointer;z-index:500;display:flex;align-items:center;gap:8px;transition:all .3s;font-family:'Montserrat',sans-serif}
+.btn-anotacoes:hover{border-color:var(--accent);color:var(--accent)}
+.painel-anotacoes{position:fixed;bottom:90px;left:32px;width:320px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;z-index:500;box-shadow:0 20px 60px rgba(0,0,0,.6);display:none}
+.painel-anotacoes.aberto{display:block;animation:fadeIn .25s ease}
+.anotacoes-header{font-size:13px;font-weight:600;color:var(--white);margin-bottom:12px;display:flex;justify-content:space-between}
+.anotacoes-fechar{cursor:pointer;color:var(--muted);font-size:18px;line-height:1}
+.anotacoes-textarea{width:100%;height:140px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:13px;line-height:1.6;padding:12px 14px;resize:none;outline:none}
+.anotacoes-textarea:focus{border-color:var(--accent)}
+.anotacoes-info{font-size:11px;color:var(--muted);margin-top:8px;text-align:right}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* INTRO TEXT */
+.secao-intro{font-size:18px;color:var(--muted);max-width:660px;margin-bottom:52px;line-height:1.7}
+
+@media(max-width:900px){
+  nav{padding:0 20px}.nav-links{display:none}
+  section{padding:80px 20px 60px}#capa{padding:80px 20px 60px}
+  .capa-titulo{font-size:42px}.capa-stats{flex-direction:column}
+  .pvso-grid{grid-template-columns:1fr;gap:16px}.pvso-vs{display:none}
+  .pv-framework{grid-template-columns:1fr 1fr}.construtor-campos{grid-template-columns:1fr}
+  .elementos-grid{grid-template-columns:1fr}.stack-layout{grid-template-columns:1fr}
+  .stack-preview{position:relative;top:0}.calc-valor-grid{grid-template-columns:1fr}
+  .tiers-grid{grid-template-columns:1fr}.garantias-grid{grid-template-columns:1fr}
+  .ancora-comparador{flex-direction:column}.ainda-seta{display:none}
+  .encerramento-trio{flex-direction:column;align-items:center}
+  .capa-numero{display:none}footer{flex-direction:column;gap:12px;padding:24px 20px}
+  .btn-anotacoes{display:none}.diag-opcoes{flex-direction:column}
+  .garantia-resultado{grid-template-columns:1fr 1fr}.calc-resultado-ratio{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div id="barra-progresso"></div>
+
+<nav>
+  <div class="nav-logo">Estruturação Comercial</div>
+  <div class="nav-links">
+    <a class="nav-link" href="#agenda">Agenda</a>
+    <a class="nav-link" href="#produto-vs-oferta">Produto vs Oferta</a>
+    <a class="nav-link" href="#proposta">Proposta de Valor</a>
+    <a class="nav-link" href="#elementos">Elementos</a>
+    <a class="nav-link" href="#stack">Stack</a>
+    <a class="nav-link" href="#precificacao">Preço</a>
+    <a class="nav-link" href="#sequencia">Sequência</a>
+    <a class="nav-link" href="#tarefa">Tarefa</a>
+  </div>
+  <div class="nav-semana">Semana 03 / Abril · Aula Final</div>
+</nav>
+
+<!-- CAPA -->
+<section id="capa" style="max-width:100%">
+  <div class="capa-grid"></div>
+  <div class="capa-glow"></div>
+  <div class="capa-badge"><span class="badge-dot"></span>Aula 03 de 03 — Aula Final</div>
+  <h1 class="capa-titulo">
+    <span class="l1">Construção</span>
+    <span class="l2">de</span>
+    <span class="l3">Oferta</span>
+  </h1>
+  <p class="capa-desc">Pare de vender o que você faz. Comece a vender o que o cliente ganha. A diferença está em como você constrói e apresenta sua oferta.</p>
+  <div class="capa-stats">
+    <div class="stat-item"><span class="stat-valor">8</span><span class="stat-label">Elementos</span></div>
+    <div class="stat-item"><span class="stat-valor">4</span><span class="stat-label">Simuladores</span></div>
+    <div class="stat-item"><span class="stat-valor">7</span><span class="stat-label">Etapas</span></div>
+    <div class="stat-item"><span class="stat-valor">1h</span><span class="stat-label">Duração</span></div>
+  </div>
+  <div class="capa-numero">03</div>
+  <div class="capa-scroll">Última aula<div class="scroll-linha"></div></div>
+</section>
+
+<!-- AGENDA -->
+<section id="agenda">
+  <p class="secao-label revelar">Estrutura da Aula</p>
+  <h2 class="secao-titulo revelar">O que vamos <span>cobrir hoje</span></h2>
+  <div class="linha-divisoria revelar" id="linha0"></div>
+  <div class="agenda-lista revelar">
+    <div class="agenda-item" onclick="expandirAgenda(this)">
+      <div class="agenda-tempo">00–08 min</div>
+      <div>
+        <div class="agenda-titulo-item">① Abertura — O que é uma oferta de verdade</div>
+        <div class="agenda-subtitulo">Por que produto e oferta são coisas completamente diferentes.</div>
+        <div class="agenda-detalhe"><p>Antes de aprender a construir, precisamos desfazer um equívoco comum: achar que oferta é sinônimo de produto ou serviço. <strong style="color:var(--accent)">Produto é o que você entrega. Oferta é o que o cliente compra.</strong> E essa diferença muda tudo — da comunicação ao preço.</p></div>
+      </div>
+      <span class="agenda-icon">+</span>
+    </div>
+    <div class="agenda-item" onclick="expandirAgenda(this)">
+      <div class="agenda-tempo">08–22 min</div>
+      <div>
+        <div class="agenda-titulo-item">② Proposta de Valor e os 8 Elementos da Oferta</div>
+        <div class="agenda-subtitulo">O framework para construir uma oferta que gera valor antes de revelar o preço.</div>
+        <div class="agenda-detalhe"><p>Uma oferta irresistível tem estrutura. Estudaremos os 8 elementos — do resultado prometido à garantia — e como combiná-los para que o cliente sinta que está fazendo um mau negócio em <em>não</em> comprar.</p></div>
+      </div>
+      <span class="agenda-icon">+</span>
+    </div>
+    <div class="agenda-item" onclick="expandirAgenda(this)">
+      <div class="agenda-tempo">22–40 min</div>
+      <div>
+        <div class="agenda-titulo-item">③ Stack de Oferta e Precificação Baseada em Valor</div>
+        <div class="agenda-subtitulo">Como empilhar valor percebido e chegar ao preço certo — sem atirar no escuro.</div>
+        <div class="agenda-detalhe"><p>O stack de oferta é a arte de empilhar elementos de valor até que o preço pareça irrisório comparado ao que o cliente recebe. Em seguida, aprendemos a precificar com base no valor entregue — não no custo de produção.</p></div>
+      </div>
+      <span class="agenda-icon">+</span>
+    </div>
+    <div class="agenda-item" onclick="expandirAgenda(this)">
+      <div class="agenda-tempo">40–55 min</div>
+      <div>
+        <div class="agenda-titulo-item">④ Sequência de Apresentação + Diagnóstico + Tarefa Final</div>
+        <div class="agenda-subtitulo">A ordem certa para apresentar uma oferta. Diagnóstico da sua oferta atual.</div>
+        <div class="agenda-detalhe"><p>A ordem em que você apresenta os elementos da oferta importa tanto quanto os elementos em si. Fechamos com um diagnóstico interativo da oferta de cada participante e as 4 tarefas práticas para sair desta aula já construindo.</p></div>
+      </div>
+      <span class="agenda-icon">+</span>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUTO VS OFERTA -->
+<section id="produto-vs-oferta">
+  <p class="secao-label revelar">Bloco 01 — Fundamento</p>
+  <h2 class="secao-titulo revelar">Produto vs. <span>Oferta</span></h2>
+  <div class="linha-divisoria revelar" id="linha1"></div>
+  <p class="secao-intro revelar">Essa distinção é o ponto de partida de tudo. A maioria das empresas vende produto quando deveria estar vendendo oferta — e perde dinheiro por isso todos os dias.</p>
+
+  <div class="pvso-grid revelar">
+    <div class="pvso-lado produto">
+      <div class="pvso-tag">O que você entrega</div>
+      <div class="pvso-nome">Produto</div>
+      <ul class="pvso-lista">
+        <li>Descreve características e funcionalidades</li>
+        <li>Foca no que você faz ou fabrica</li>
+        <li>A conversa começa pelo preço</li>
+        <li>O valor é percebido como commodity</li>
+        <li>Comparado diretamente com concorrentes</li>
+        <li>Cliente pergunta: "quanto custa?"</li>
+      </ul>
+      <div class="pvso-exemplo">
+        <div class="pvso-exemplo-label">Exemplo de comunicação de produto</div>
+        <div class="pvso-exemplo-texto">"Consultoria de marketing digital com 8 sessões mensais, relatórios semanais e gestão de até 3 canais."</div>
+      </div>
+    </div>
+    <div class="pvso-vs">VS</div>
+    <div class="pvso-lado oferta">
+      <div class="pvso-tag">O que o cliente compra</div>
+      <div class="pvso-nome">Oferta</div>
+      <ul class="pvso-lista">
+        <li>Descreve a transformação e o resultado</li>
+        <li>Foca no antes e no depois do cliente</li>
+        <li>A conversa começa pelo valor gerado</li>
+        <li>O valor é percebido como único e específico</li>
+        <li>Difícil de comparar — é sobre contexto</li>
+        <li>Cliente pergunta: "como eu começo?"</li>
+      </ul>
+      <div class="pvso-exemplo">
+        <div class="pvso-exemplo-label">Exemplo de comunicação de oferta</div>
+        <div class="pvso-exemplo-texto">"Em 90 dias, você terá um canal de aquisição digital funcionando, gerando leads qualificados — ou devolvemos cada centavo."</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pvso-destaque revelar">
+    <div class="pvso-destaque-icon">💡</div>
+    <div class="pvso-destaque-texto">
+      <strong>A regra de ouro: o cliente não compra o que você faz — compra o que ele deixa de sofrer ou passa a conquistar</strong>
+      <p>Toda oferta poderosa parte de uma transformação: do estado atual (problema, dor, limitação) para o estado desejado (resultado, alívio, conquista). Seu trabalho como vendedor é tornar essa transformação concreta, crível e urgente — antes de mencionar o preço.</p>
+    </div>
+  </div>
+
+  <!-- Bloco de transformação -->
+  <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center" class="revelar">
+    <div style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:28px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--red);margin-bottom:16px">Estado Atual — Antes</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:14px;color:var(--muted);display:flex;gap:8px"><span style="color:var(--red)">✗</span> Dor e problema não resolvido</div>
+        <div style="font-size:14px;color:var(--muted);display:flex;gap:8px"><span style="color:var(--red)">✗</span> Frustração e limitação atual</div>
+        <div style="font-size:14px;color:var(--muted);display:flex;gap:8px"><span style="color:var(--red)">✗</span> Custo de não resolver o problema</div>
+        <div style="font-size:14px;color:var(--muted);display:flex;gap:8px"><span style="color:var(--red)">✗</span> Risco de continuar como está</div>
+      </div>
+    </div>
+    <div style="text-align:center;padding:0 8px">
+      <div style="font-size:36px;color:var(--accent);font-weight:800">→</div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:4px">sua<br>oferta</div>
+    </div>
+    <div style="background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);border-radius:12px;padding:28px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--green);margin-bottom:16px">Estado Desejado — Depois</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:14px;color:var(--text);display:flex;gap:8px"><span style="color:var(--green)">✓</span> Resultado concreto e mensurável</div>
+        <div style="font-size:14px;color:var(--text);display:flex;gap:8px"><span style="color:var(--green)">✓</span> Alívio da dor e conquista do desejo</div>
+        <div style="font-size:14px;color:var(--text);display:flex;gap:8px"><span style="color:var(--green)">✓</span> Prazo definido de transformação</div>
+        <div style="font-size:14px;color:var(--text);display:flex;gap:8px"><span style="color:var(--green)">✓</span> Risco eliminado pela garantia</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROPOSTA DE VALOR -->
+<section id="proposta">
+  <p class="secao-label revelar">Bloco 02</p>
+  <h2 class="secao-titulo revelar">Proposta de <span>Valor</span></h2>
+  <div class="linha-divisoria revelar" id="linha2"></div>
+  <p class="secao-intro revelar">A proposta de valor é a frase-síntese que comunica, em segundos, para quem você serve, o que você entrega e por que isso importa. É a espinha dorsal de toda a sua oferta.</p>
+
+  <div class="pv-framework revelar">
+    <div class="pv-pilar" style="--pilar-cor:var(--accent)">
+      <div class="pv-pilar-num" style="color:rgba(200,241,53,.12)">01</div>
+      <div class="pv-pilar-nome">Para Quem</div>
+      <div class="pv-pilar-desc">Quem é o cliente ideal que vai se beneficiar? Quanto mais específico, mais poderoso.</div>
+      <div class="pv-pilar-pergunta">"Quem exatamente eu estou ajudando?"</div>
+    </div>
+    <div class="pv-pilar" style="--pilar-cor:var(--blue)">
+      <div class="pv-pilar-num" style="color:rgba(56,189,248,.12)">02</div>
+      <div class="pv-pilar-nome">Qual Resultado</div>
+      <div class="pv-pilar-desc">Qual transformação concreta e mensurável você entrega? Evite adjetivos — use números.</div>
+      <div class="pv-pilar-pergunta">"O que muda na vida do cliente?"</div>
+    </div>
+    <div class="pv-pilar" style="--pilar-cor:var(--purple)">
+      <div class="pv-pilar-num" style="color:rgba(139,92,246,.12)">03</div>
+      <div class="pv-pilar-nome">Em Quanto Tempo</div>
+      <div class="pv-pilar-desc">Prazo cria urgência e credibilidade. Uma promessa sem prazo é uma promessa vaga.</div>
+      <div class="pv-pilar-pergunta">"Quando o cliente vê o resultado?"</div>
+    </div>
+    <div class="pv-pilar" style="--pilar-cor:var(--orange)">
+      <div class="pv-pilar-num" style="color:rgba(249,115,22,.12)">04</div>
+      <div class="pv-pilar-nome">Sem o Quê</div>
+      <div class="pv-pilar-desc">Que obstáculo, esforço ou risco você elimina? É aqui que o cliente sente o alívio.</div>
+      <div class="pv-pilar-pergunta">"O que ele não precisa mais fazer sozinho?"</div>
+    </div>
+  </div>
+
+  <!-- Construtor interativo -->
+  <div class="construtor-pv revelar">
+    <div class="construtor-titulo">🔧 Construtor de Proposta de Valor</div>
+    <div class="construtor-desc">Preencha os campos abaixo para montar sua proposta de valor em tempo real. Use linguagem simples e específica — quanto mais concreto, melhor.</div>
+    <div class="construtor-campos">
+      <div class="construtor-campo">
+        <label>Para quem? (seu cliente ideal)</label>
+        <input type="text" id="pv1" placeholder="Ex: donos de clínicas odontológicas" oninput="atualizarPV()">
+      </div>
+      <div class="construtor-campo">
+        <label>Qual resultado concreto?</label>
+        <input type="text" id="pv2" placeholder="Ex: dobrar o número de novos pacientes por mês" oninput="atualizarPV()">
+      </div>
+      <div class="construtor-campo">
+        <label>Em quanto tempo?</label>
+        <input type="text" id="pv3" placeholder="Ex: em até 90 dias" oninput="atualizarPV()">
+      </div>
+      <div class="construtor-campo">
+        <label>Sem precisar fazer o quê?</label>
+        <input type="text" id="pv4" placeholder="Ex: sem depender de indicações ou post diário" oninput="atualizarPV()">
+      </div>
+      <div class="construtor-campo" style="grid-column:1/-1">
+        <label>Qual seu diferencial ou método? (opcional)</label>
+        <input type="text" id="pv5" placeholder="Ex: usando nosso sistema de captação por tráfego local e reativação de base" oninput="atualizarPV()">
+      </div>
+    </div>
+    <div class="pv-preview">
+      <div class="pv-preview-label">Sua proposta de valor <span id="pvStatus">preencha os campos ↑</span></div>
+      <div class="pv-preview-texto" id="pvTexto">
+        Ajudamos <span class="pv-empty" id="fill1">seu cliente ideal</span> a <span class="pv-empty" id="fill2">alcançar o resultado desejado</span>, <span class="pv-empty" id="fill3">em um prazo definido</span>, <span class="pv-empty" id="fill4">sem os obstáculos que os travam hoje</span><span id="fill5wrapper"> — <span class="pv-empty" id="fill5">com seu método ou diferencial</span></span>.
+      </div>
+      <button class="pv-copiar-btn" onclick="copiarPV()">📋 Copiar proposta de valor</button>
+    </div>
+  </div>
+</section>
+
+<!-- 8 ELEMENTOS DA OFERTA -->
+<section id="elementos">
+  <p class="secao-label revelar">Bloco 03</p>
+  <h2 class="secao-titulo revelar">Os 8 Elementos da <span>Oferta Irresistível</span></h2>
+  <div class="linha-divisoria revelar" id="linha3"></div>
+  <p class="secao-intro revelar">Uma oferta irresistível não nasce de talento — nasce de estrutura. Cada um desses elementos aumenta o valor percebido e reduz a resistência à compra. Clique em cada um para aprofundar.</p>
+
+  <div class="elementos-grid revelar">
+
+    <!-- 1 -->
+    <div class="elemento-card el1" style="--el-cor:var(--accent)" onclick="toggleElemento(this)">
+      <div class="elemento-num" style="color:rgba(200,241,53,.12)">01</div>
+      <div class="elemento-icon">🎯</div>
+      <div class="elemento-nome">Resultado Prometido</div>
+      <div class="elemento-resumo">O que exatamente o cliente conquista? Quanto mais específico e mensurável, mais poderoso.</div>
+      <div class="elemento-corpo">
+        <div class="elemento-corpo-inner">
+          <p>O resultado prometido é a transformação central da sua oferta. Não pode ser vago ("melhorar seus resultados") nem genérico ("aumentar suas vendas"). Precisa ser específico, mensurável e relevante para o cliente ideal.</p>
+          <p>Pense sempre em números, percentuais, prazos ou mudanças qualitativas claras. O cliente compra quando consegue imaginar claramente o "depois".</p>
+          <div class="elemento-exemplo">
+            <div class="elemento-exemplo-label">Exemplo</div>
+            <div class="elemento-exemplo-texto" style="color:var(--muted)">❌ "Ajudamos a aumentar suas vendas"</div>
+            <div class="elemento-exemplo-texto" style="color:var(--accent);margin-top:6px">✓ "Geramos 20 a 40 novos clientes por mês no seu nicho, nos primeiros 90 dias"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="elemento-card el2" style="--el-cor:var(--blue)" onclick="toggleElemento(this)">
+      <div class="elemento-num" style="color:rgba(56,189,248,.12)">02</div>
+      <div class="elemento-icon">⏱️</div>
+      <div class="elemento-nome">Prazo de Entrega</div>
+      <div class="elemento-resumo">Em quanto tempo o cliente chega ao resultado? Prazo definido cria urgência e credibilidade.</div>
+      <div class="elemento-corpo">
+        <div class="elemento-corpo-inner">
+          <p>Promessas sem prazo não convencem. O cliente precisa saber quando vai ver o retorno do investimento. Um prazo específico também demonstra que você tem um processo — não apenas boa intenção.</p>
+          <p>O prazo ideal deve ser ambicioso o suficiente para impressionar e realista o suficiente para você cumprir. Prazos muito longos reduzem a urgência; prazos impossíveis destroem credibilidade.</p>
+          <div class="elemento-exemplo">
+            <div class="elemento-exemplo-label">Formatos que funcionam</div>
+            <div class="elemento-exemplo-texto" style="color:var(--text)">"Em 30 dias" · "Em até 3 meses" · "Na primeira semana" · "Antes do próximo trimestre"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="elemento-card el3" style="--el-cor:var(--purple)" onclick="toggleElemento(this)">
+      <div class="elemento-num" style="color:rgba(139,92,246,.12)">03</div>
+      <div class="elemento-icon">🛡️</div>
+      <div class="elemento-nome">Redução de Risco</div>
+      <div class="elemento-resumo">Garantia, trial ou prova social que torna a decisão de compra segura e óbvia.</div>
+      <div class="elemento-corpo">
+        <div class="elemento-corpo-inner">
+          <p>Todo cliente carrega medo de errar. Quem assume esse risco define quem fecha mais — e quem não fecha. Quando você elimina o risco com uma garantia sólida, o cliente não tem motivo racional para dizer não.</p>
+          <p>A garantia não é custo — é investimento em conversão. Empresas com garantias fortes geralmente têm taxas de reembolso menores do que aquelas com garantias fracas, porque entregam mais.</p>
+          <div class="elemento-exemplo">
+            <div class="elemento-exemplo-label">Tipos de garantia</div>
+            <div class="elemento-exemplo-texto" style="color:var(--text)">Reembolso integral · Garantia de resultado · Garantia condicional · Período de teste gratuito · Devolução sem perguntas</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="elemento-card el4" style="--el-cor:var(--orange)" onclick="toggleElemento(this)">
+      <div class="elemento-num" style="color:rgba(249,115,22,.12)">04</div>
+      <div class="elemento-icon">🧩</div>
+      <div class="elemento-nome">Facilidade de Execução</div>
+      <div class="elemento-resumo">Quanto esforço o cliente precisa colocar? Quanto menos, melhor — sem abrir mão da entrega.</div>
+      <div class="elemento-corpo">
+        <div class="elemento-corpo-inner">
+          <p>O cliente não compra apenas o resultado — compra a facilidade de chegar lá. "Feito para você" vale mais que "faça você mesmo" na percepção de valor, mesmo quando o resultado final é o mesmo.</p>
+          <p>Mapeie cada etapa que o cliente precisa executar e pergunte: posso fazer isso por ele? Posso simplificar? Posso automatizar? Cada passo eliminado aumenta o valor percebido da oferta.</p>
+          <div class="elemento-exemplo">
+            <div class="elemento-exemplo-label">Como comunicar facilidade</div>
+            <div class="elemento-exemplo-texto" style="color:var(--text)">"Cuidamos de tudo" · "Você só precisa de 1 hora por semana" · "Implementamos por você" · "Plug-and-play"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="elemento-card el5" style="--el-cor:var(--green)" onclick="toggleElemento(this)">
+      <div class="elemento-num" style="color:rgba(34,197,94,.12)">05</div>
+      <div class="elemento-icon">📦</div>
+      <div class="elemento-nome">Bônus e Complementos</div>
+      <div class="elemento-resumo">Elementos extras que aumentam o valor percebido sem aumentar (muito) seu custo de entrega.</div>
+      <div class="elemento-corpo">
+        <div class="elemento-corpo-inner">
+          <p>Bônus bem escolhidos podem multiplicar o valor percebido da oferta. A regra: o bônus deve ter valor real e percebido para o cliente ideal — não pode parecer um enchimento de linguiça.</p>
+          <p>O bônus ideal resolve um problema adjacente ao problema principal, ou acelera o resultado. Quando bem posicionado, o cliente sente que está ganhando muito mais do que pagou.</p>
+          <div class="elemento-exemplo">
+            <div class="elemento-exemplo-label">Bônus que funcionam</div>
+            <div class="elemento-exemplo-texto" style="color:var(--text)">Templates e ferramentas · Acesso a comunidade · Sessão extra de consultoria · Acesso a conteúdo premium · Suporte prioritário por 30 dias</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="elemento-card el6" style="--el-cor:var(--yellow)" onclick="toggleElemento(this)">
+      <div class="elemento-num" style="color:rgba(234,179,8,.12)">06</div>
+      <div class="elemento-icon">⚡</div>
+      <div class="elemento-nome">Urgência e Escassez</div>
+      <div class="elemento-resumo">Motivo real para decidir agora — não depois. Sem urgência, a maioria volta "para pensar" e não volta.</div>
+      <div class="elemento-corpo">
+        <div class="elemento-corpo-inner">
+          <p>Urgência e escassez funcionam — quando são reais. Urgência falsa destrói credibilidade. Urgência real cria decisão. Exemplos de urgência real: vagas limitadas, preço de lançamento com data, resultado que deteriora com o tempo.</p>
+          <p><strong style="color:var(--white)">Importante:</strong> o objetivo não é manipular — é ajudar o cliente a tomar uma decisão que é boa para ele agora, não postergá-la indefinidamente por medo de decidir.</p>
+          <div class="elemento-exemplo">
+            <div class="elemento-exemplo-label">Urgência genuína</div>
+            <div class="elemento-exemplo-texto" style="color:var(--text)">"Turma fecha em X dias" · "Apenas N vagas no onboarding deste mês" · "Preço sobe em Y" · "Custo do problema cresce a cada mês que passa"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="elemento-card el7" style="--el-cor:var(--pink)" onclick="toggleElemento(this)">
+      <div class="elemento-num" style="color:rgba(236,72,153,.12)">07</div>
+      <div class="elemento-icon">🏆</div>
+      <div class="elemento-nome">Prova Social e Credibilidade</div>
+      <div class="elemento-resumo">Evidências de que você já entregou essa transformação para outros. A prova reduz o ceticismo.</div>
+      <div class="elemento-corpo">
+        <div class="elemento-corpo-inner">
+          <p>Ninguém quer ser cobaia. A prova social transforma sua promessa em realidade demonstrada. Um depoimento de cliente com resultado específico vale mais que qualquer argumento de venda.</p>
+          <p>A regra de ouro da prova social: o mais específico, melhor. "João aumentou o faturamento em 40% em 2 meses" converte mais que "nossos clientes adoram o serviço".</p>
+          <div class="elemento-exemplo">
+            <div class="elemento-exemplo-label">Tipos de prova que convencem</div>
+            <div class="elemento-exemplo-texto" style="color:var(--text)">Depoimento com resultado numérico · Estudo de caso detalhado · Portfolio com antes/depois · Logos de clientes reconhecidos · Certificações e premiações</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="elemento-card el8" style="--el-cor:var(--red)" onclick="toggleElemento(this)">
+      <div class="elemento-num" style="color:rgba(239,68,68,.12)">08</div>
+      <div class="elemento-icon">💰</div>
+      <div class="elemento-nome">Preço e Condições</div>
+      <div class="elemento-resumo">O preço vem por último — depois que o valor já está estabelecido. Condições reduzem a barreira de entrada.</div>
+      <div class="elemento-corpo">
+        <div class="elemento-corpo-inner">
+          <p>O preço é o último elemento a ser apresentado — sempre. Quando o cliente já entende o valor, o resultado, a garantia e os bônus, o preço parece muito menor em comparação. Revelá-lo antes é o erro mais comum em apresentações comerciais.</p>
+          <p>As condições de pagamento (parcelamento, desconto à vista, período de teste) são uma alavanca poderosa: elas reduzem a barreira de entrada sem necessariamente reduzir o preço total.</p>
+          <div class="elemento-exemplo">
+            <div class="elemento-exemplo-label">Como apresentar o preço</div>
+            <div class="elemento-exemplo-texto" style="color:var(--text)">"Tudo que você vai receber vale R$ X... sua investimento total é R$ Y" · Comparar com o custo do problema · Parcelamento inteligente</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- STACK DE OFERTA -->
+<section id="stack">
+  <p class="secao-label revelar">Simulador — Stack de Oferta</p>
+  <h2 class="secao-titulo revelar">Monte o seu <span>Stack de Valor</span></h2>
+  <div class="linha-divisoria revelar" id="linha4"></div>
+  <p class="secao-intro revelar">O stack de oferta é a técnica de empilhar elementos de valor até que o preço pareça irrisório. Clique nos elementos abaixo para adicioná-los à sua oferta e veja o valor percebido crescer.</p>
+
+  <div class="stack-layout revelar">
+    <div class="stack-elementos">
+      <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px">Elementos disponíveis — clique para adicionar</div>
+
+      <div class="stack-item-btn" style="--item-cor:var(--accent)" onclick="toggleStack(this,'🎯','Programa principal de entrega',12000,'var(--accent)')">
+        <div class="stack-item-ico">🎯</div>
+        <div class="stack-item-info"><div class="stack-item-nome">Programa principal de entrega</div><div class="stack-item-valor">Valor percebido: R$ 12.000</div></div>
+        <div class="stack-item-check">✓</div>
+      </div>
+      <div class="stack-item-btn" style="--item-cor:var(--blue)" onclick="toggleStack(this,'🔧','Implementação e setup inicial',4500,'var(--blue)')">
+        <div class="stack-item-ico">🔧</div>
+        <div class="stack-item-info"><div class="stack-item-nome">Implementação e setup inicial</div><div class="stack-item-valor">Valor percebido: R$ 4.500</div></div>
+        <div class="stack-item-check">✓</div>
+      </div>
+      <div class="stack-item-btn" style="--item-cor:var(--purple)" onclick="toggleStack(this,'📚','Biblioteca de templates e materiais',2800,'var(--purple)')">
+        <div class="stack-item-ico">📚</div>
+        <div class="stack-item-info"><div class="stack-item-nome">Biblioteca de templates e materiais</div><div class="stack-item-valor">Valor percebido: R$ 2.800</div></div>
+        <div class="stack-item-check">✓</div>
+      </div>
+      <div class="stack-item-btn" style="--item-cor:var(--orange)" onclick="toggleStack(this,'🤝','Sessões de mentoria ao vivo (4x)',3200,'var(--orange)')">
+        <div class="stack-item-ico">🤝</div>
+        <div class="stack-item-info"><div class="stack-item-nome">Sessões de mentoria ao vivo (4×)</div><div class="stack-item-valor">Valor percebido: R$ 3.200</div></div>
+        <div class="stack-item-check">✓</div>
+      </div>
+      <div class="stack-item-btn" style="--item-cor:var(--green)" onclick="toggleStack(this,'💬','Suporte por WhatsApp / 30 dias',1800,'var(--green)')">
+        <div class="stack-item-ico">💬</div>
+        <div class="stack-item-info"><div class="stack-item-nome">Suporte via WhatsApp por 30 dias</div><div class="stack-item-valor">Valor percebido: R$ 1.800</div></div>
+        <div class="stack-item-check">✓</div>
+      </div>
+      <div class="stack-item-btn" style="--item-cor:var(--yellow)" onclick="toggleStack(this,'🔄','Revisão e auditoria em 60 dias',2400,'var(--yellow)')">
+        <div class="stack-item-ico">🔄</div>
+        <div class="stack-item-info"><div class="stack-item-nome">Revisão e auditoria em 60 dias</div><div class="stack-item-valor">Valor percebido: R$ 2.400</div></div>
+        <div class="stack-item-check">✓</div>
+      </div>
+      <div class="stack-item-btn" style="--item-cor:var(--pink)" onclick="toggleStack(this,'🏆','Acesso à comunidade VIP (1 ano)',1500,'var(--pink)')">
+        <div class="stack-item-ico">🏆</div>
+        <div class="stack-item-info"><div class="stack-item-nome">Acesso à comunidade VIP (1 ano)</div><div class="stack-item-valor">Valor percebido: R$ 1.500</div></div>
+        <div class="stack-item-check">✓</div>
+      </div>
+      <div class="stack-item-btn" style="--item-cor:var(--red)" onclick="toggleStack(this,'🛡️','Garantia de resultado em 90 dias',0,'var(--red)')">
+        <div class="stack-item-ico">🛡️</div>
+        <div class="stack-item-info"><div class="stack-item-nome">Garantia de resultado em 90 dias</div><div class="stack-item-valor">Percepção de risco: zero</div></div>
+        <div class="stack-item-check">✓</div>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-top:8px">
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px">Seu preço de venda (R$)</div>
+        <input type="number" id="stackPreco" value="5997" min="0" oninput="atualizarStack()"
+          style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--white);font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;padding:12px 16px;outline:none;transition:border-color .3s">
+      </div>
+    </div>
+
+    <!-- Preview da oferta -->
+    <div class="stack-preview">
+      <div class="stack-preview-titulo">📋 Sua Oferta</div>
+      <div id="stackVazia" class="stack-oferta-vazia">Nenhum elemento adicionado ainda.<br>Clique nos itens ao lado →</div>
+      <div id="stackItens"></div>
+      <div id="stackTotalArea" style="display:none">
+        <div class="stack-total-row">
+          <span class="stack-total-label">Valor percebido total</span>
+          <span class="stack-total-val" id="stackTotal">R$ 0</span>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:var(--muted)">Seu preço de venda</span>
+            <span style="font-size:22px;font-weight:800;color:var(--white)" id="stackPrecoExib">R$ 5.997</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+            <span style="font-size:12px;color:var(--muted)">O cliente paga</span>
+            <span style="font-size:14px;font-weight:700;color:var(--accent)" id="stackPorcentagem">~50% do valor percebido</span>
+          </div>
+        </div>
+        <div class="stack-percepcao">
+          <div class="stack-percepcao-label">Percepção de valor da oferta</div>
+          <div class="stack-barra-bg"><div class="stack-barra-fill" id="stackBarra" style="width:0%"></div></div>
+          <div class="stack-percepcao-texto" id="stackPercTexto">Adicione mais elementos para aumentar a percepção</div>
+        </div>
+        <button class="stack-limpar" onclick="limparStack()">↺ Limpar oferta</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRECIFICAÇÃO -->
+<section id="precificacao">
+  <p class="secao-label revelar">Bloco 04</p>
+  <h2 class="secao-titulo revelar">Precificação <span>Baseada em Valor</span></h2>
+  <div class="linha-divisoria revelar" id="linha5"></div>
+  <p class="secao-intro revelar">O maior erro na precificação é olhar para o seu custo. O cliente não está comprando seu custo — está comprando o valor que você gera. Veja como pensar diferente.</p>
+
+  <div class="preco-tabs revelar">
+    <button class="preco-tab ativo" onclick="trocarPreco('valor')">Calculadora de Valor</button>
+    <button class="preco-tab" onclick="trocarPreco('tiers')">Estrutura de Pacotes</button>
+    <button class="preco-tab" onclick="trocarPreco('ancora')">Âncora de Preço</button>
+  </div>
+
+  <!-- Calculadora de valor -->
+  <div class="preco-painel ativo" id="preco-valor">
+    <div style="background:rgba(200,241,53,.06);border:1px solid rgba(200,241,53,.2);border-radius:10px;padding:20px 24px;margin-bottom:28px">
+      <div style="font-size:13px;font-weight:600;color:var(--accent);margin-bottom:6px">💡 A lógica da precificação por valor</div>
+      <div style="font-size:14px;color:var(--muted);line-height:1.7">Estime quanto vale o problema que você resolve para o cliente. Um preço justo é uma fração desse valor — tipicamente entre 10% e 30%. Isso torna a decisão óbvia: o cliente investe R$ 1 para recuperar R$ 5 ou mais.</div>
+    </div>
+    <div class="calc-valor-grid">
+      <div class="calc-val-bloco">
+        <div class="calc-val-titulo">Estime o valor do problema</div>
+        <div class="calc-val-campo">
+          <label>Ganho ou economia mensal que você gera</label>
+          <div class="calc-val-prefix"><input type="number" class="calc-val-input" id="cv1" value="15000" oninput="calcValor()" placeholder="0"></div>
+        </div>
+        <div class="calc-val-campo">
+          <label>Por quantos meses o benefício se sustenta</label>
+          <input type="number" class="calc-val-input" id="cv2" value="12" min="1" oninput="calcValor()" style="text-align:right">
+        </div>
+        <div class="calc-val-campo">
+          <label>Custo do problema (se não resolver)</label>
+          <div class="calc-val-prefix"><input type="number" class="calc-val-input" id="cv3" value="8000" oninput="calcValor()" placeholder="0"></div>
+        </div>
+        <div class="calc-val-campo">
+          <label>Percentual do valor a cobrar (%)</label>
+          <input type="number" class="calc-val-input" id="cv4" value="20" min="1" max="100" oninput="calcValor()" style="text-align:right">
+        </div>
+      </div>
+      <div>
+        <div class="calc-resultado-grande">
+          <div class="calc-resultado-label">Valor total gerado ao cliente</div>
+          <span class="calc-resultado-num" id="cvValorTotal">R$ 276.000</span>
+          <div class="calc-resultado-sub">ao longo do período</div>
+          <div class="calc-resultado-ratio">
+            <div class="ratio-item">
+              <span class="ratio-num" id="cvSugerido" style="color:var(--accent)">R$ 55.200</span>
+              <span class="ratio-label">Preço sugerido</span>
+            </div>
+            <div class="ratio-item">
+              <span class="ratio-num" id="cvRoi" style="color:var(--green)">5x</span>
+              <span class="ratio-label">ROI do cliente</span>
+            </div>
+            <div class="ratio-item">
+              <span class="ratio-num" id="cvMeses" style="color:var(--blue)">1,2m</span>
+              <span class="ratio-label">Payback</span>
+            </div>
+          </div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:16px">
+          <div style="font-size:12px;color:var(--muted);line-height:1.7">⚠️ <strong style="color:var(--white)">Atenção:</strong> esses números são ponto de partida para a conversa — não fórmula rígida. Teste com o mercado e ajuste. Mas nunca mais baseie seu preço apenas no tempo que você gasta.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tiers -->
+  <div class="preco-painel" id="preco-tiers">
+    <div style="background:rgba(200,241,53,.06);border:1px solid rgba(200,241,53,.2);border-radius:10px;padding:20px 24px;margin-bottom:28px">
+      <div style="font-size:13px;font-weight:600;color:var(--accent);margin-bottom:6px">💡 Por que ter 3 opções?</div>
+      <div style="font-size:14px;color:var(--muted);line-height:1.7">Oferecer apenas uma opção força uma decisão binária: sim ou não. Três opções movem a decisão para "qual dos três?" — e o cliente do meio é sempre o mais escolhido (efeito Goldilocks). O tier premium ancora o valor; o básico mostra que não é para todo mundo.</div>
+    </div>
+    <div class="tiers-grid">
+      <div class="tier-card tier-essencial">
+        <div class="tier-nome">Essencial</div>
+        <div class="tier-preco">R$ 2.997</div>
+        <div class="tier-preco-desc">pagamento único ou 3× sem juros</div>
+        <ul class="tier-lista">
+          <li>Programa principal (acesso gravado)</li>
+          <li>Templates e materiais</li>
+          <li>Suporte por e-mail</li>
+          <li class="off">Sessões de mentoria ao vivo</li>
+          <li class="off">Revisão e auditoria</li>
+          <li class="off">Garantia de resultado</li>
+        </ul>
+        <button class="tier-btn">Começar com Essencial</button>
+      </div>
+      <div class="tier-card tier-popular">
+        <div class="tier-nome">Padrão</div>
+        <div class="tier-preco">R$ 5.997</div>
+        <div class="tier-preco-desc">pagamento único ou 6× sem juros</div>
+        <ul class="tier-lista">
+          <li>Programa principal (ao vivo + gravado)</li>
+          <li>Templates e materiais</li>
+          <li>Suporte via WhatsApp (30 dias)</li>
+          <li>4 sessões de mentoria ao vivo</li>
+          <li>Revisão e auditoria em 60 dias</li>
+          <li class="off">Garantia de resultado estendida</li>
+        </ul>
+        <button class="tier-btn">Escolher Padrão</button>
+      </div>
+      <div class="tier-card tier-premium">
+        <div class="tier-nome">Premium</div>
+        <div class="tier-preco">R$ 11.997</div>
+        <div class="tier-preco-desc">pagamento único ou 12× sem juros</div>
+        <ul class="tier-lista">
+          <li>Programa principal (ao vivo + gravado)</li>
+          <li>Templates e materiais</li>
+          <li>Suporte via WhatsApp (90 dias)</li>
+          <li>8 sessões de mentoria ao vivo</li>
+          <li>Revisão e auditoria em 30, 60 e 90 dias</li>
+          <li>Garantia de resultado em 90 dias</li>
+        </ul>
+        <button class="tier-btn">Acessar Premium</button>
+      </div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-top:16px">
+      <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:12px">📐 Regra de ouro dos tiers</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+        <div style="font-size:13px;color:var(--muted);line-height:1.6"><strong style="color:var(--muted)">Básico (25%)</strong><br>Existe para mostrar que há opção de entrada, mas deve parecer claramente incompleto.</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.6"><strong style="color:var(--accent)">Padrão (65%)</strong><br>Aqui mora sua maioria. Deve parecer a escolha óbvia — completo, justo, sem exagero.</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.6"><strong style="color:var(--purple)">Premium (10%)</strong><br>Ancora o valor. Justifica o Padrão como acessível. Quem compra Premium é bonus.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Âncora -->
+  <div class="preco-painel" id="preco-ancora">
+    <div style="background:rgba(200,241,53,.06);border:1px solid rgba(200,241,53,.2);border-radius:10px;padding:20px 24px;margin-bottom:28px">
+      <div style="font-size:13px;font-weight:600;color:var(--accent);margin-bottom:6px">💡 O que é âncora de preço?</div>
+      <div style="font-size:14px;color:var(--muted);line-height:1.7">O cérebro humano avalia preço de forma relativa, não absoluta. R$ 5.000 parece caro em isolamento. R$ 5.000 parece barato ao lado de uma âncora de R$ 15.000. Quem apresenta o número primeiro define o ponto de referência da negociação.</div>
+    </div>
+    <div class="ancora-visual revelar">
+      <div class="ancora-titulo">Exemplo: efeito âncora na prática</div>
+      <div class="ancora-desc">Veja como a mesma oferta de R$ 5.997 é percebida de formas radicalmente diferentes dependendo do que aparece primeiro.</div>
+      <div class="ancora-comparador">
+        <div class="ancora-box referencia">
+          <div class="ancora-box-label">Âncora (valor percebido)</div>
+          <div class="ancora-box-preco">R$ 28.200</div>
+          <div class="ancora-box-desc">"Tudo que você recebe vale..."</div>
+        </div>
+        <div class="ancora-seta">→</div>
+        <div class="ancora-box alvo">
+          <div class="ancora-box-label">Preço real da oferta</div>
+          <div class="ancora-box-preco">R$ 5.997</div>
+          <div class="ancora-box-desc">parece barato comparado</div>
+        </div>
+        <div class="ancora-seta" style="color:var(--border)">|</div>
+        <div class="ancora-box inferior">
+          <div class="ancora-box-label">Sem âncora (percepção)</div>
+          <div class="ancora-box-preco">R$ 5.997</div>
+          <div class="ancora-box-desc">"tá caro..."</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px">
+        <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:12px">✅ Âncoras que funcionam</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:13px;color:var(--muted);display:flex;gap:8px;line-height:1.5"><span style="color:var(--green)">→</span>Custo de contratar profissional full-time</div>
+          <div style="font-size:13px;color:var(--muted);display:flex;gap:8px;line-height:1.5"><span style="color:var(--green)">→</span>Valor do stack completo de bônus e entregáveis</div>
+          <div style="font-size:13px;color:var(--muted);display:flex;gap:8px;line-height:1.5"><span style="color:var(--green)">→</span>Custo de não resolver o problema ao longo do tempo</div>
+          <div style="font-size:13px;color:var(--muted);display:flex;gap:8px;line-height:1.5"><span style="color:var(--green)">→</span>Tier premium apresentado antes do padrão</div>
+          <div style="font-size:13px;color:var(--muted);display:flex;gap:8px;line-height:1.5"><span style="color:var(--green)">→</span>Resultado gerado que justifica o investimento</div>
+        </div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px">
+        <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:12px">❌ Erros comuns de âncora</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:13px;color:var(--muted);display:flex;gap:8px;line-height:1.5"><span style="color:var(--red)">→</span>Mostrar o preço antes de construir o valor</div>
+          <div style="font-size:13px;color:var(--muted);display:flex;gap:8px;line-height:1.5"><span style="color:var(--red)">→</span>Âncora irreal que o cliente não acredita</div>
+          <div style="font-size:13px;color:var(--muted);display:flex;gap:8px;line-height:1.5"><span style="color:var(--red)">→</span>Não usar nenhuma âncora e deixar o cliente criar a própria</div>
+          <div style="font-size:13px;color:var(--muted);display:flex;gap:8px;line-height:1.5"><span style="color:var(--red)">→</span>Descontar antes de ser pedido</div>
+          <div style="font-size:13px;color:var(--muted);display:flex;gap:8px;line-height:1.5"><span style="color:var(--red)">→</span>Comparar com concorrente mais barato como âncora</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GARANTIAS -->
+<section id="garantias">
+  <p class="secao-label revelar">Bloco 05</p>
+  <h2 class="secao-titulo revelar">Garantias e <span>Redução de Risco</span></h2>
+  <div class="linha-divisoria revelar" id="linha6"></div>
+  <p class="secao-intro revelar">A garantia é o elemento mais subestimado de uma oferta. Ela não é custo — é investimento em conversão. Quando você elimina o risco, elimina a principal barreira de compra.</p>
+
+  <div class="garantias-grid revelar">
+    <div class="garantia-card" style="--g-cor:var(--green)">
+      <div class="garantia-icon">💸</div>
+      <div class="garantia-nome">Garantia de Reembolso</div>
+      <div class="garantia-desc">Devolução integral do valor pago dentro de um prazo, sem perguntas ou burocracia.</div>
+      <div class="garantia-quando" style="color:var(--green)">Ideal para: produtos digitais, cursos, SaaS com período de teste</div>
+    </div>
+    <div class="garantia-card" style="--g-cor:var(--accent)">
+      <div class="garantia-icon">🎯</div>
+      <div class="garantia-nome">Garantia de Resultado</div>
+      <div class="garantia-desc">Você se compromete a continuar trabalhando (sem custo extra) até o resultado ser atingido.</div>
+      <div class="garantia-quando" style="color:var(--accent)">Ideal para: consultorias, agências, serviços de performance</div>
+    </div>
+    <div class="garantia-card" style="--g-cor:var(--blue)">
+      <div class="garantia-icon">🔄</div>
+      <div class="garantia-nome">Garantia Condicional</div>
+      <div class="garantia-desc">O reembolso é garantido se o cliente cumprir requisitos definidos. Protege você e motiva o cliente a participar.</div>
+      <div class="garantia-quando" style="color:var(--blue)">Ideal para: programas de transformação com participação ativa</div>
+    </div>
+    <div class="garantia-card" style="--g-cor:var(--purple)">
+      <div class="garantia-icon">🧪</div>
+      <div class="garantia-nome">Período de Teste</div>
+      <div class="garantia-desc">O cliente usa por um período e só paga se quiser continuar. Remove a barreira inicial completamente.</div>
+      <div class="garantia-quando" style="color:var(--purple)">Ideal para: SaaS, assinaturas, ferramentas de produtividade</div>
+    </div>
+    <div class="garantia-card" style="--g-cor:var(--orange)">
+      <div class="garantia-icon">🤝</div>
+      <div class="garantia-nome">Prova de Conceito</div>
+      <div class="garantia-desc">Um projeto piloto menor e mais barato para demonstrar valor antes da contratação maior.</div>
+      <div class="garantia-quando" style="color:var(--orange)">Ideal para: B2B com ticket alto, projetos corporativos complexos</div>
+    </div>
+    <div class="garantia-card" style="--g-cor:var(--pink)">
+      <div class="garantia-icon">⏳</div>
+      <div class="garantia-nome">Garantia de Satisfação</div>
+      <div class="garantia-desc">Se o cliente não estiver satisfeito com a experiência em X dias, devolve-se o valor — sem justificativa.</div>
+      <div class="garantia-quando" style="color:var(--pink)">Ideal para: serviços de experiência, premium, high-touch</div>
+    </div>
+  </div>
+
+  <!-- Calculadora de impacto da garantia -->
+  <div class="garantia-calc revelar">
+    <div class="garantia-calc-titulo">📊 Calculadora de Impacto da Garantia</div>
+    <div class="garantia-calc-desc">Simule como uma garantia sólida afeta sua operação. Na prática, garantias bem estruturadas aumentam mais a conversão do que aumentam os reembolsos.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      <div>
+        <div class="garantia-slider-grupo">
+          <label>Leads por mês <span id="gLeads">100</span></label>
+          <input type="range" class="g-slider" id="gLeadsSlider" min="10" max="1000" value="100" oninput="calcGarantia()">
+        </div>
+        <div class="garantia-slider-grupo">
+          <label>Taxa de conversão SEM garantia <span id="gTaxaSem">8%</span></label>
+          <input type="range" class="g-slider" id="gTaxaSemSlider" min="1" max="50" value="8" oninput="calcGarantia()">
+        </div>
+        <div class="garantia-slider-grupo">
+          <label>Aumento de conversão COM garantia <span id="gAumento">40%</span></label>
+          <input type="range" class="g-slider" id="gAumentoSlider" min="5" max="100" value="40" oninput="calcGarantia()">
+        </div>
+        <div class="garantia-slider-grupo">
+          <label>Taxa de reembolso esperada <span id="gReembolso">3%</span></label>
+          <input type="range" class="g-slider" id="gReembolsoSlider" min="0" max="30" value="3" oninput="calcGarantia()">
+        </div>
+        <div class="garantia-slider-grupo">
+          <label>Ticket médio (R$) <span id="gTicket">R$ 3.000</span></label>
+          <input type="range" class="g-slider" id="gTicketSlider" min="500" max="50000" step="500" value="3000" oninput="calcGarantia()">
+        </div>
+      </div>
+      <div>
+        <div class="garantia-resultado">
+          <div class="g-res-card">
+            <span class="g-res-num" id="gClientesSem" style="color:var(--muted)">8</span>
+            <span class="g-res-label">Clientes sem garantia</span>
+          </div>
+          <div class="g-res-card">
+            <span class="g-res-num" id="gClientesCom" style="color:var(--accent)">11</span>
+            <span class="g-res-label">Clientes com garantia</span>
+          </div>
+          <div class="g-res-card">
+            <span class="g-res-num" id="gReembolsos" style="color:var(--red)">0</span>
+            <span class="g-res-label">Reembolsos/mês</span>
+          </div>
+        </div>
+        <div style="margin-top:16px;background:linear-gradient(135deg,rgba(200,241,53,.08),rgba(200,241,53,.03));border:1px solid rgba(200,241,53,.2);border-radius:12px;padding:20px;text-align:center">
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px">Receita adicional líquida / mês</div>
+          <div style="font-size:48px;font-weight:800;color:var(--accent)" id="gReceitaExtra">+R$ 8.910</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px">com a garantia vs. sem a garantia</div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-top:12px;background:var(--card);border-radius:8px;padding:12px 14px">
+          💡 Esses números mostram que oferecer garantia, na maioria dos casos, <strong style="color:var(--white)">aumenta a receita líquida</strong> mesmo contabilizando os reembolsos — porque o ganho em conversão supera o custo dos reembolsos.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEQUÊNCIA DE APRESENTAÇÃO -->
+<section id="sequencia">
+  <p class="secao-label revelar">Bloco 06</p>
+  <h2 class="secao-titulo revelar">Sequência de <span>Apresentação</span></h2>
+  <div class="linha-divisoria revelar" id="linha7"></div>
+  <p class="secao-intro revelar">A ordem em que você apresenta os elementos da oferta é tão importante quanto os próprios elementos. Essa sequência foi testada e otimizada para maximizar o valor percebido antes de revelar o preço.</p>
+
+  <div class="sequencia-lista revelar">
+    <div class="seq-item" style="--seq-cor:var(--red)">
+      <div class="seq-num-wrapper"><div class="seq-num">1</div></div>
+      <div class="seq-corpo">
+        <div class="seq-nome">🔥 A Dor — Contextualize o problema</div>
+        <div class="seq-desc">Antes de falar de solução, certifique-se de que o cliente sente o peso do problema. Quanto mais claramente ele reconhece a dor, mais urgência vai sentir para resolver.</div>
+        <div class="seq-dica">Use perguntas abertas: <strong>"Como está isso impactando seu negócio hoje?"</strong> ou <strong>"Quanto tempo você já está convivendo com esse problema?"</strong> — o cliente verbaliza a dor e ela se torna mais real.</div>
+        <div class="seq-erro">Entrar direto na solução sem antes validar que o problema existe para o cliente.</div>
+      </div>
+    </div>
+    <div class="seq-item" style="--seq-cor:var(--orange)">
+      <div class="seq-num-wrapper"><div class="seq-num">2</div></div>
+      <div class="seq-corpo">
+        <div class="seq-nome">💰 O Custo — Quanto custa não resolver</div>
+        <div class="seq-desc">Torne o custo da inação concreto e numérico. Se o problema custa R$ 10.000 por mês ao cliente, sua solução de R$ 5.000 já parece lucrativa antes de qualquer outra palavra.</div>
+        <div class="seq-dica"><strong>"Se esse problema continuar por mais 12 meses, qual o impacto estimado no seu negócio?"</strong> — deixe o cliente calcular com você. O número que ele diz tem mais poder que o número que você diz.</div>
+      </div>
+    </div>
+    <div class="seq-item" style="--seq-cor:var(--yellow)">
+      <div class="seq-num-wrapper"><div class="seq-num">3</div></div>
+      <div class="seq-corpo">
+        <div class="seq-nome">🌅 O Depois — Pinte o estado desejado</div>
+        <div class="seq-desc">Descreva em detalhes como é a vida do cliente depois que o problema está resolvido. Use linguagem sensorial e específica. O cliente precisa conseguir visualizar e desejar esse futuro.</div>
+        <div class="seq-dica"><strong>"Imagine que em 90 dias, você acorda e [resultado desejado]. O que muda no seu dia a dia?"</strong> — quando o cliente responde essa pergunta, ele está se vendendo para si mesmo.</div>
+      </div>
+    </div>
+    <div class="seq-item" style="--seq-cor:var(--blue)">
+      <div class="seq-num-wrapper"><div class="seq-num">4</div></div>
+      <div class="seq-corpo">
+        <div class="seq-nome">🔧 A Solução — O que você entrega e como</div>
+        <div class="seq-desc">Agora sim, apresente sua solução — mas sempre conectada ao resultado, não às funcionalidades. "Fazemos X para que você alcance Y" é o modelo. Não liste features; descreva transformações.</div>
+        <div class="seq-dica">Apresente cada entregável dizendo o que ele <strong>faz pelo cliente</strong>, não o que é. <strong>"As sessões semanais garantem que você nunca fique travado — sempre há próximo passo claro."</strong></div>
+        <div class="seq-erro">Descrever funcionalidades e características sem conectar ao benefício percebido pelo cliente.</div>
+      </div>
+    </div>
+    <div class="seq-item" style="--seq-cor:var(--pink)">
+      <div class="seq-num-wrapper"><div class="seq-num">5</div></div>
+      <div class="seq-corpo">
+        <div class="seq-nome">🏆 A Prova — Evidências de que funciona</div>
+        <div class="seq-desc">Apresente casos de clientes anteriores com resultados específicos. Quanto mais parecido o case com a situação do cliente atual, mais convincente. A prova elimina o ceticismo e constrói credibilidade.</div>
+        <div class="seq-dica"><strong>"Um cliente nosso em situação parecida com a sua..."</strong> — escolha o case mais próximo do perfil do cliente que está sendo apresentado. Relevância é mais importante que impressionabilidade.</div>
+      </div>
+    </div>
+    <div class="seq-item" style="--seq-cor:var(--accent)">
+      <div class="seq-num-wrapper"><div class="seq-num">6</div></div>
+      <div class="seq-corpo">
+        <div class="seq-nome">📦 O Stack — Empilhe os bônus e complementos</div>
+        <div class="seq-desc">Antes de revelar o preço, some em voz alta (ou visualmente) o valor de tudo que o cliente vai receber. Bônus, suporte, extras. Esse é o momento em que a percepção de valor explode.</div>
+        <div class="seq-dica"><strong>"Tudo isso que vimos até aqui — o programa, as sessões, os templates, o suporte — se você fosse contratar tudo separado, pagaria em torno de R$ X. Mas hoje não é isso que você vai pagar."</strong></div>
+      </div>
+    </div>
+    <div class="seq-item" style="--seq-cor:var(--green)">
+      <div class="seq-num-wrapper"><div class="seq-num">7</div></div>
+      <div class="seq-corpo">
+        <div class="seq-nome">💰 O Preço — Revele o investimento</div>
+        <div class="seq-desc">Depois de todo o valor construído, revele o preço com confiança — não com desculpas. Se você acredita no valor, apresente o número como a decisão óbvia que ele é. Condições de pagamento vêm logo depois.</div>
+        <div class="seq-dica"><strong>"Seu investimento total para tudo isso é R$ X — podendo ser parcelado em até Y vezes. E ainda tem a garantia: se em 90 dias você não tiver [resultado], devolvemos cada centavo."</strong></div>
+        <div class="seq-erro">Pedir desculpa pelo preço, hesitar, ou dar desconto antes mesmo de ser pedido.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIAGNÓSTICO DA OFERTA -->
+<section id="diagnostico">
+  <p class="secao-label revelar">Simulador Final</p>
+  <h2 class="secao-titulo revelar">Diagnóstico da <span>Sua Oferta</span></h2>
+  <div class="linha-divisoria revelar" id="linha8"></div>
+  <p class="secao-intro revelar">Responda honestamente às perguntas abaixo sobre a sua oferta atual. Você receberá um score e recomendações práticas para melhorá-la antes da próxima semana.</p>
+
+  <div class="diagnostico revelar">
+    <div class="diagnostico-titulo">📋 Questionário de Diagnóstico</div>
+    <div class="diagnostico-desc">10 perguntas sobre os pilares de uma oferta sólida. Responda com sinceridade — não há resposta certa ou errada, apenas um retrato do momento atual.</div>
+
+    <div class="diag-perguntas" id="diagPerguntas">
+
+      <div class="diag-pergunta" data-q="1">
+        <div class="diag-pergunta-texto">1. Você consegue descrever o resultado da sua oferta em 1 frase com número e prazo?</div>
+        <div class="diag-opcoes">
+          <button class="diag-opt sim" onclick="responderDiag(this,1,1)">Sim, claramente</button>
+          <button class="diag-opt parcial" onclick="responderDiag(this,1,0.5)">Mais ou menos</button>
+          <button class="diag-opt nao" onclick="responderDiag(this,1,0)">Não ainda</button>
+        </div>
+      </div>
+
+      <div class="diag-pergunta" data-q="2">
+        <div class="diag-pergunta-texto">2. Sua oferta tem uma proposta de valor escrita e documentada?</div>
+        <div class="diag-opcoes">
+          <button class="diag-opt sim" onclick="responderDiag(this,2,1)">Sim, escrita e testada</button>
+          <button class="diag-opt parcial" onclick="responderDiag(this,2,0.5)">Na minha cabeça</button>
+          <button class="diag-opt nao" onclick="responderDiag(this,2,0)">Não existe formalmente</button>
+        </div>
+      </div>
+
+      <div class="diag-pergunta" data-q="3">
+        <div class="diag-pergunta-texto">3. Você tem algum tipo de garantia ou redução de risco para o cliente?</div>
+        <div class="diag-opcoes">
+          <button class="diag-opt sim" onclick="responderDiag(this,3,1)">Sim, garantia clara</button>
+          <button class="diag-opt parcial" onclick="responderDiag(this,3,0.5)">Informal / verbal</button>
+          <button class="diag-opt nao" onclick="responderDiag(this,3,0)">Não ofereço garantia</button>
+        </div>
+      </div>
+
+      <div class="diag-pergunta" data-q="4">
+        <div class="diag-pergunta-texto">4. Você usa prova social com resultados específicos na sua apresentação?</div>
+        <div class="diag-opcoes">
+          <button class="diag-opt sim" onclick="responderDiag(this,4,1)">Sim, com números reais</button>
+          <button class="diag-opt parcial" onclick="responderDiag(this,4,0.5)">Depoimentos genéricos</button>
+          <button class="diag-opt nao" onclick="responderDiag(this,4,0)">Nenhuma prova social</button>
+        </div>
+      </div>
+
+      <div class="diag-pergunta" data-q="5">
+        <div class="diag-pergunta-texto">5. Seu preço atual foi definido com base no valor entregue ao cliente?</div>
+        <div class="diag-opcoes">
+          <button class="diag-opt sim" onclick="responderDiag(this,5,1)">Sim, baseado em valor</button>
+          <button class="diag-opt parcial" onclick="responderDiag(this,5,0.5)">Mistura custo + mercado</button>
+          <button class="diag-opt nao" onclick="responderDiag(this,5,0)">Baseado no meu custo</button>
+        </div>
+      </div>
+
+      <div class="diag-pergunta" data-q="6">
+        <div class="diag-pergunta-texto">6. Você tem uma sequência definida de apresentação da oferta?</div>
+        <div class="diag-opcoes">
+          <button class="diag-opt sim" onclick="responderDiag(this,6,1)">Sim, com script/roteiro</button>
+          <button class="diag-opt parcial" onclick="responderDiag(this,6,0.5)">Intuitivo mas sem estrutura</button>
+          <button class="diag-opt nao" onclick="responderDiag(this,6,0)">Improviso em cada reunião</button>
+        </div>
+      </div>
+
+      <div class="diag-pergunta" data-q="7">
+        <div class="diag-pergunta-texto">7. Sua oferta tem bônus ou complementos que aumentam o valor percebido?</div>
+        <div class="diag-opcoes">
+          <button class="diag-opt sim" onclick="responderDiag(this,7,1)">Sim, com valores declarados</button>
+          <button class="diag-opt parcial" onclick="responderDiag(this,7,0.5)">Alguns extras informais</button>
+          <button class="diag-opt nao" onclick="responderDiag(this,7,0)">Não há bônus</button>
+        </div>
+      </div>
+
+      <div class="diag-pergunta" data-q="8">
+        <div class="diag-pergunta-texto">8. Você tem 2 ou mais opções de preço/pacote para o cliente escolher?</div>
+        <div class="diag-opcoes">
+          <button class="diag-opt sim" onclick="responderDiag(this,8,1)">Sim, 3 tiers definidos</button>
+          <button class="diag-opt parcial" onclick="responderDiag(this,8,0.5)">Uma opção + personalizado</button>
+          <button class="diag-opt nao" onclick="responderDiag(this,8,0)">Só uma opção única</button>
+        </div>
+      </div>
+
+      <div class="diag-pergunta" data-q="9">
+        <div class="diag-pergunta-texto">9. Você consegue explicar por que sua oferta é diferente das alternativas do mercado?</div>
+        <div class="diag-opcoes">
+          <button class="diag-opt sim" onclick="responderDiag(this,9,1)">Sim, com argumentos sólidos</button>
+          <button class="diag-opt parcial" onclick="responderDiag(this,9,0.5)">Tenho ideias mas sem clareza</button>
+          <button class="diag-opt nao" onclick="responderDiag(this,9,0)">Não consigo diferenciar</button>
+        </div>
+      </div>
+
+      <div class="diag-pergunta" data-q="10">
+        <div class="diag-pergunta-texto">10. Após uma apresentação, o cliente tem clareza total de tudo que recebe?</div>
+        <div class="diag-opcoes">
+          <button class="diag-opt sim" onclick="responderDiag(this,10,1)">Sim, temos material de apoio</button>
+          <button class="diag-opt parcial" onclick="responderDiag(this,10,0.5)">Razoável, mas há dúvidas</button>
+          <button class="diag-opt nao" onclick="responderDiag(this,10,0)">Costumam sair com dúvidas</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="diag-btn" onclick="calcularDiag()">Ver meu diagnóstico →</button>
+      <button class="diag-btn-reset" onclick="resetDiag()">↺ Reiniciar</button>
+    </div>
+
+    <div class="diag-resultado" id="diagResultado">
+      <div class="diag-score-row">
+        <div class="diag-score-num" id="diagScoreNum">7,5</div>
+        <div class="diag-score-info">
+          <div class="diag-score-label" id="diagNivel">Nível: Oferta em desenvolvimento</div>
+          <div class="diag-score-sub" id="diagSub">Sua oferta tem bases sólidas — alguns ajustes estratégicos podem dobrar sua taxa de conversão.</div>
+        </div>
+      </div>
+      <div class="diag-barra-bg"><div class="diag-barra-fill" id="diagBarra" style="width:0%"></div></div>
+      <div class="diag-recomendacoes" id="diagRecs"></div>
+    </div>
+  </div>
+</section>
+
+<!-- TAREFA -->
+<section id="tarefa">
+  <p class="secao-label revelar">Bloco Final</p>
+  <h2 class="secao-titulo revelar">Tarefas: <span>Construindo Sua Oferta</span></h2>
+  <div class="linha-divisoria revelar" id="linha9"></div>
+  <p style="font-size:18px;color:var(--muted);max-width:600px;margin-bottom:48px;line-height:1.7" class="revelar">Estas são as 4 tarefas práticas para sair desta aula já construindo. Não espere a oferta perfeita — comece com uma hipótese e valide com o mercado.</p>
+
+  <div class="progresso-tarefas revelar">
+    <span class="progresso-label">Progresso das tarefas</span>
+    <div class="progresso-barra"><div class="progresso-fill" id="progressoFill"></div></div>
+    <span class="progresso-pct" id="progressoPct">0%</span>
+  </div>
+
+  <div class="tarefas-lista revelar">
+    <div class="tarefa-item t1" onclick="marcarTarefa(this,1)">
+      <div class="tarefa-num">01</div>
+      <div class="tarefa-corpo">
+        <div class="tarefa-nome">Escreva sua proposta de valor em 1 frase</div>
+        <div class="tarefa-desc">Use o construtor desta aula. Preencha os 4 campos (quem, resultado, prazo, sem o quê) e escreva a frase final. Compartilhe com 3 pessoas do seu ICP e pergunte: "isso faz sentido para você?" Ajuste com base no feedback — não na sua opinião.</div>
+      </div>
+      <div class="tarefa-check" id="check1">✓</div>
+    </div>
+    <div class="tarefa-item t2" onclick="marcarTarefa(this,2)">
+      <div class="tarefa-num">02</div>
+      <div class="tarefa-corpo">
+        <div class="tarefa-nome">Monte o stack de valor da sua oferta</div>
+        <div class="tarefa-desc">Liste todos os entregáveis, bônus e complementos da sua oferta atual. Para cada um, estime um valor percebido (não seu custo). Some tudo e compare com seu preço de venda. O total deve ser pelo menos 3× o preço para o efeito ser percebido.</div>
+      </div>
+      <div class="tarefa-check" id="check2">✓</div>
+    </div>
+    <div class="tarefa-item t3" onclick="marcarTarefa(this,3)">
+      <div class="tarefa-num">03</div>
+      <div class="tarefa-corpo">
+        <div class="tarefa-nome">Defina ou revise sua garantia</div>
+        <div class="tarefa-desc">Com base nos tipos de garantia vistos hoje, escolha uma que faz sentido para seu negócio. Escreva em 2 a 3 frases como ela funciona, quais são as condições e como comunicar isso na próxima apresentação. Teste ao menos uma vez antes do próximo mês.</div>
+      </div>
+      <div class="tarefa-check" id="check3">✓</div>
+    </div>
+    <div class="tarefa-item t4" onclick="marcarTarefa(this,4)">
+      <div class="tarefa-num">04</div>
+      <div class="tarefa-corpo">
+        <div class="tarefa-nome">Faça uma apresentação completa usando a sequência das 7 etapas</div>
+        <div class="tarefa-desc">Nas próximas duas semanas, apresente sua oferta seguindo a sequência: Dor → Custo → Depois → Solução → Prova → Stack → Preço. Grave (com permissão) ou anote as reações do cliente em cada etapa. Traga os aprendizados para a próxima turma.</div>
+      </div>
+      <div class="tarefa-check" id="check4">✓</div>
+    </div>
+  </div>
+
+  <!-- Encerramento -->
+  <div class="encerramento revelar">
+    <div class="encerramento-badge"><span class="badge-dot"></span>Ciclo Completo — 3 de 3 Aulas</div>
+    <h2 class="encerramento-titulo">Você tem tudo o que <span>precisa para começar</span></h2>
+    <p class="encerramento-desc">Três semanas, três pilares. Agora você sabe de onde vêm seus clientes, como transformar leads em vendas com um processo e como construir uma oferta que gera valor antes do preço. O que vem agora é execução.</p>
+    <div class="encerramento-trio">
+      <div class="enc-pilar">
+        <div class="enc-pilar-icone">📡</div>
+        <div class="enc-pilar-titulo">Aula 1</div>
+        <div class="enc-pilar-sub">Canais & ICP</div>
+      </div>
+      <div style="font-size:28px;color:var(--border);display:flex;align-items:center">→</div>
+      <div class="enc-pilar">
+        <div class="enc-pilar-icone">⚙️</div>
+        <div class="enc-pilar-titulo">Aula 2</div>
+        <div class="enc-pilar-sub">Processo & Taxas</div>
+      </div>
+      <div style="font-size:28px;color:var(--border);display:flex;align-items:center">→</div>
+      <div class="enc-pilar">
+        <div class="enc-pilar-icone">🎯</div>
+        <div class="enc-pilar-titulo">Aula 3</div>
+        <div class="enc-pilar-sub">Oferta & Valor</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Estruturação Comercial</div>
+  <div>Aula 3 de 3 — Aula Final do Ciclo</div>
+  <div id="relogio"></div>
+</footer>
+
+<button class="btn-anotacoes" onclick="toggleAnotacoes()">✏️ Anotações</button>
+<div class="painel-anotacoes" id="painelAnotacoes">
+  <div class="anotacoes-header">
+    <span>Minhas Anotações</span>
+    <span class="anotacoes-fechar" onclick="toggleAnotacoes()">×</span>
+  </div>
+  <textarea class="anotacoes-textarea" id="anotacoesTexto" placeholder="Escreva aqui suas anotações..." oninput="salvarAnotacoes()"></textarea>
+  <div class="anotacoes-info" id="anotacoesInfo">Salvamento automático ativo</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CURSOR ──
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px'});
+function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing)}
+animRing();
+document.querySelectorAll('a,button,.canal-preset,.tarefa-item,.agenda-item,.elemento-card,.stack-item-btn,.tier-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.style.width='20px';cursor.style.height='20px';ring.style.width='56px';ring.style.height='56px'});
+  el.addEventListener('mouseleave',()=>{cursor.style.width='12px';cursor.style.height='12px';ring.style.width='36px';ring.style.height='36px'});
+});
+
+// ── PROGRESSO ──
+window.addEventListener('scroll',()=>{
+  const pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+  document.getElementById('barra-progresso').style.width=pct+'%';
+  atualizarNavAtivo();
+});
+
+// ── NAV ATIVO ──
+function atualizarNavAtivo(){
+  const secs=['agenda','produto-vs-oferta','proposta','elementos','stack','precificacao','sequencia','tarefa'];
+  let atual='';
+  secs.forEach(id=>{const el=document.getElementById(id);if(el&&window.scrollY>=el.offsetTop-120)atual=id});
+  document.querySelectorAll('.nav-link').forEach(l=>l.classList.toggle('ativo',l.getAttribute('href')==='#'+atual));
+}
+
+// ── SCROLL REVEAL ──
+const obs=new IntersectionObserver((entries)=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      e.target.style.transitionDelay=(i*.07)+'s';
+      e.target.classList.add('visivel');
+      const id=e.target.id;
+      if(id&&id.startsWith('linha'))setTimeout(()=>e.target.classList.add('animada'),100);
+      obs.unobserve(e.target);
+    }
+  });
+},{threshold:.08});
+document.querySelectorAll('.revelar,[id^="linha"]').forEach(el=>obs.observe(el));
+
+// ── AGENDA ──
+function expandirAgenda(item){
+  document.querySelectorAll('.agenda-item.expandido').forEach(a=>{if(a!==item)a.classList.remove('expandido')});
+  item.classList.toggle('expandido');
+}
+setTimeout(()=>{const p=document.querySelector('.agenda-item');if(p)p.classList.add('expandido')},1200);
+
+// ── ELEMENTOS ──
+function toggleElemento(card){
+  const isOpen=card.classList.contains('aberto');
+  document.querySelectorAll('.elemento-card.aberto').forEach(c=>{if(c!==card)c.classList.remove('aberto')});
+  card.classList.toggle('aberto',!isOpen);
+}
+
+// ── CONSTRUTOR PV ──
+function atualizarPV(){
+  const campos=['pv1','pv2','pv3','pv4','pv5'];
+  const vals=campos.map(id=>document.getElementById(id).value.trim());
+  const fills=['fill1','fill2','fill3','fill4','fill5'];
+  const textos=['seu cliente ideal','alcançar o resultado desejado','em um prazo definido','sem os obstáculos que os travam hoje','com seu método ou diferencial'];
+  let preenchidos=0;
+  fills.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(vals[i]){
+      el.className='pv-fill';el.textContent=vals[i];preenchidos++;
+    } else {
+      el.className='pv-empty';el.textContent=textos[i];
+    }
+  });
+  const w5=document.getElementById('fill5wrapper');
+  if(!vals[4])w5.style.display='none'; else w5.style.display='';
+  const status=document.getElementById('pvStatus');
+  if(preenchidos===0)status.textContent='preencha os campos ↑';
+  else if(preenchidos<4)status.textContent=`${preenchidos}/4 campos preenchidos`;
+  else{status.textContent='✓ Proposta completa';status.style.color='var(--accent)'}
+}
+
+function copiarPV(){
+  const t=document.getElementById('pvTexto').innerText;
+  if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>mostrarToast('Proposta de valor copiada! ✓'));}
+  else{mostrarToast('Selecione e copie manualmente o texto acima');}
+}
+
+// ── STACK ──
+const stackState={};
+let stackTotal=0;
+
+function toggleStack(btn,ico,nome,valor,cor){
+  const key=nome;
+  if(stackState[key]){
+    delete stackState[key];
+    btn.classList.remove('adicionado');
+  } else {
+    stackState[key]={ico,nome,valor,cor};
+    btn.classList.add('adicionado');
+  }
+  atualizarStack();
+}
+
+function atualizarStack(){
+  const items=Object.values(stackState);
+  const total=items.reduce((s,i)=>s+i.valor,0);
+  const preco=parseFloat(document.getElementById('stackPreco').value)||0;
+  const vazia=document.getElementById('stackVazia');
+  const itensEl=document.getElementById('stackItens');
+  const totalArea=document.getElementById('stackTotalArea');
+
+  if(items.length===0){vazia.style.display='';itensEl.innerHTML='';totalArea.style.display='none';return}
+  vazia.style.display='none';totalArea.style.display='';
+
+  itensEl.innerHTML=items.map(i=>`
+    <div class="stack-oferta-item">
+      <div class="stack-oferta-item-ico">${i.ico}</div>
+      <div class="stack-oferta-item-nome">${i.nome}</div>
+      <div class="stack-oferta-item-val">${i.valor>0?'R$ '+i.valor.toLocaleString('pt-BR'):'🛡️'}</div>
+    </div>`).join('');
+
+  document.getElementById('stackTotal').textContent='R$ '+total.toLocaleString('pt-BR');
+  document.getElementById('stackPrecoExib').textContent='R$ '+preco.toLocaleString('pt-BR');
+
+  const pct=total>0?Math.min((preco/total)*100,100):0;
+  const restante=total>0?Math.round((preco/total)*100):0;
+  document.getElementById('stackPorcentagem').textContent='~'+restante+'% do valor percebido';
+  document.getElementById('stackBarra').style.width=pct+'%';
+
+  let texto='';let nivelCor=pct;
+  if(pct>80)texto='⚠️ Preço próximo demais do valor percebido — adicione mais elementos';
+  else if(pct>50)texto='→ Boa relação valor/preço — pode melhorar com mais bônus';
+  else if(pct>20)texto='✓ Excelente percepção de valor — decisão óbvia para o cliente';
+  else texto='🏆 Oferta excepcional — o cliente sente que está fazendo o negócio da vida';
+  document.getElementById('stackPercTexto').textContent=texto;
+}
+
+function limparStack(){
+  Object.keys(stackState).forEach(k=>delete stackState[k]);
+  document.querySelectorAll('.stack-item-btn.adicionado').forEach(b=>b.classList.remove('adicionado'));
+  atualizarStack();
+  mostrarToast('Stack limpo — comece de novo');
+}
+
+// ── PRECIFICAÇÃO ──
+function trocarPreco(aba){
+  document.querySelectorAll('.preco-tab').forEach(t=>t.classList.remove('ativo'));
+  document.querySelectorAll('.preco-painel').forEach(p=>p.classList.remove('ativo'));
+  event.currentTarget.classList.add('ativo');
+  document.getElementById('preco-'+aba).classList.add('ativo');
+}
+
+function fmt(n){return n.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0})}
+function fmtR(n){return 'R$ '+fmt(n)}
+
+function calcValor(){
+  const ganho=parseFloat(document.getElementById('cv1').value)||0;
+  const meses=parseFloat(document.getElementById('cv2').value)||1;
+  const custo=parseFloat(document.getElementById('cv3').value)||0;
+  const pct=parseFloat(document.getElementById('cv4').value)||20;
+
+  const valorTotal=ganho*meses+custo*meses;
+  const sugerido=valorTotal*(pct/100);
+  const roi=sugerido>0?Math.round(valorTotal/sugerido):0;
+  const payback=ganho>0?(sugerido/ganho).toFixed(1):'-';
+
+  document.getElementById('cvValorTotal').textContent=fmtR(Math.round(valorTotal));
+  document.getElementById('cvSugerido').textContent=fmtR(Math.round(sugerido));
+  document.getElementById('cvRoi').textContent=roi+'x';
+  document.getElementById('cvMeses').textContent=payback+'m';
+}
+calcValor();
+
+// ── GARANTIA ──
+function calcGarantia(){
+  const leads=parseInt(document.getElementById('gLeadsSlider').value)||100;
+  const taxaSem=parseFloat(document.getElementById('gTaxaSemSlider').value)||8;
+  const aumento=parseFloat(document.getElementById('gAumentoSlider').value)||40;
+  const reembolso=parseFloat(document.getElementById('gReembolsoSlider').value)||3;
+  const ticket=parseFloat(document.getElementById('gTicketSlider').value)||3000;
+
+  document.getElementById('gLeads').textContent=leads;
+  document.getElementById('gTaxaSem').textContent=taxaSem+'%';
+  document.getElementById('gAumento').textContent=aumento+'%';
+  document.getElementById('gReembolso').textContent=reembolso+'%';
+  document.getElementById('gTicket').textContent=fmtR(ticket);
+
+  const cliSem=Math.round(leads*(taxaSem/100));
+  const taxaCom=taxaSem*(1+(aumento/100));
+  const cliCom=Math.round(leads*(taxaCom/100));
+  const reemb=Math.round(cliCom*(reembolso/100));
+  const receitaSem=cliSem*ticket;
+  const receitaCom=(cliCom-reemb)*ticket;
+  const extra=receitaCom-receitaSem;
+
+  document.getElementById('gClientesSem').textContent=cliSem;
+  document.getElementById('gClientesCom').textContent=cliCom;
+  document.getElementById('gReembolsos').textContent=reemb;
+  document.getElementById('gReceitaExtra').textContent=(extra>=0?'+':'')+fmtR(Math.round(extra));
+  document.getElementById('gReceitaExtra').style.color=extra>=0?'var(--accent)':'var(--red)';
+}
+calcGarantia();
+
+// ── DIAGNÓSTICO ──
+const respostas={};
+function responderDiag(btn,q,val){
+  const container=btn.closest('.diag-pergunta');
+  container.querySelectorAll('.diag-opt').forEach(b=>{
+    b.classList.remove('selecionado');
+    if(b.classList.contains('nao'))b.classList.remove('selecionado');
+  });
+  btn.classList.add('selecionado');
+  respostas[q]=val;
+}
+
+function calcularDiag(){
+  const total=Object.values(respostas).reduce((s,v)=>s+v,0);
+  const max=10;
+  const score=Math.round((total/max)*10*10)/10;
+  const pct=(total/max)*100;
+
+  document.getElementById('diagScoreNum').textContent=score.toFixed(1);
+  document.getElementById('diagBarra').style.width=pct+'%';
+
+  let nivel,sub,recs=[];
+  if(score>=8){
+    nivel='🏆 Oferta Sólida e Bem Estruturada';
+    sub='Sua oferta está em excelente forma. Os ajustes agora são de otimização — cada melhoria vai aumentar ainda mais sua taxa de conversão.';
+    recs=['Teste variações de proposta de valor para diferentes segmentos do ICP','Colete mais provas sociais com resultados numéricos para fortalecer ainda mais a credibilidade','Considere criar um tier premium para ancorar melhor o tier padrão'];
+  } else if(score>=6){
+    nivel='✓ Oferta em Desenvolvimento — Boa Base';
+    sub='Sua oferta tem fundamentos sólidos. Alguns pilares precisam de atenção para você aumentar conversão de forma consistente.';
+    recs=['Documente e formalize sua proposta de valor — sair da cabeça para o papel é o primeiro passo','Implemente uma garantia clara — mesmo que simples, vai aumentar conversão imediatamente','Construa um stack de valor com entregáveis e valores declarados para cada reunião'];
+  } else if(score>=4){
+    nivel='→ Oferta Iniciante — Prioridade Alta';
+    sub='Sua oferta ainda depende muito de improviso e de contexto. Com estrutura, você pode dobrar ou triplicar sua conversão nos próximos 60 dias.';
+    recs=['Comece pela proposta de valor: escreva uma frase com resultado + prazo + para quem','Defina uma garantia básica — reembolso em 7 ou 14 dias é suficiente para começar','Mapeie todos os seus entregáveis e crie um documento de oferta para enviar após cada reunião','Escolha um ou dois cases de sucesso e documente com números reais'];
+  } else {
+    nivel='⚠️ Oferta Precisa de Reconstrução';
+    sub='Muitos pilares fundamentais ainda não existem. A boa notícia: pequenas ações já vão gerar resultados visíveis rapidamente.';
+    recs=['Pare de apresentar preço antes de construir valor — essa mudança sozinha muda a conversa','Escreva sua proposta de valor usando o framework desta aula: quem, resultado, prazo, sem o quê','Escolha UMA garantia simples e comece a oferecê-la na próxima semana','Use os simuladores desta aula para montar seu stack de valor antes da próxima reunião'];
+  }
+
+  document.getElementById('diagNivel').textContent=nivel;
+  document.getElementById('diagSub').textContent=sub;
+  document.getElementById('diagRecs').innerHTML=recs.map(r=>`<div class="diag-rec"><span style="color:var(--accent);flex-shrink:0">→</span>${r}</div>`).join('');
+  document.getElementById('diagResultado').classList.add('visivel');
+  setTimeout(()=>document.getElementById('diagResultado').scrollIntoView({behavior:'smooth',block:'nearest'}),200);
+}
+
+function resetDiag(){
+  Object.keys(respostas).forEach(k=>delete respostas[k]);
+  document.querySelectorAll('.diag-opt').forEach(b=>b.classList.remove('selecionado'));
+  document.getElementById('diagResultado').classList.remove('visivel');
+}
+
+// ── TAREFAS ──
+const estadoTarefas={1:false,2:false,3:false,4:false};
+function marcarTarefa(item,num){
+  estadoTarefas[num]=!estadoTarefas[num];
+  item.classList.toggle('concluida',estadoTarefas[num]);
+  const c=Object.values(estadoTarefas).filter(Boolean).length;
+  const pct=Math.round((c/4)*100);
+  document.getElementById('progressoFill').style.width=pct+'%';
+  document.getElementById('progressoPct').textContent=pct+'%';
+  if(estadoTarefas[num])mostrarToast('Tarefa '+num+' concluída! ✓');
+  if(pct===100)setTimeout(()=>mostrarToast('Parabéns! Ciclo completo. Agora é executar 🚀'),300);
+}
+
+// ── TOAST ──
+let toastTimer;
+function mostrarToast(msg){
+  clearTimeout(toastTimer);
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('visivel');
+  toastTimer=setTimeout(()=>t.classList.remove('visivel'),3500);
+}
+
+// ── ANOTAÇÕES ──
+function toggleAnotacoes(){document.getElementById('painelAnotacoes').classList.toggle('aberto')}
+function salvarAnotacoes(){
+  const txt=document.getElementById('anotacoesTexto').value;
+  try{localStorage.setItem('anotacoes_aula3',txt)}catch(e){}
+  document.getElementById('anotacoesInfo').textContent='Salvo às '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+try{const s=localStorage.getItem('anotacoes_aula3');if(s)document.getElementById('anotacoesTexto').value=s}catch(e){}
+
+// ── RELÓGIO ──
+function tick(){document.getElementById('relogio').textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}
+setInterval(tick,1000);tick();
+
+// ── 3D HOVER ──
+document.querySelectorAll('.tier-card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const x=((e.clientX-r.left)/r.width-.5)*6;
+    const y=((e.clientY-r.top)/r.height-.5)*6;
+    card.style.transform=`perspective(600px) rotateY(${x}deg) rotateX(${-y}deg) translateY(-4px)`;
+  });
+  card.addEventListener('mouseleave',()=>card.style.transform='');
+});
+</script>
+</body>
+</html>
